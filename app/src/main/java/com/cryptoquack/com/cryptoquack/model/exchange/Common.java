@@ -1,4 +1,4 @@
-package com.cryptoquack.cryptoquack;
+package com.cryptoquack.com.cryptoquack.model.exchange;
 
 import com.cryptoquack.com.cryptoquack.model.exchange.Exchanges;
 
