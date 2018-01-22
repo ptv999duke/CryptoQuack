@@ -28,4 +28,9 @@ public abstract class BaseExchange {
     }
 
     public abstract ArrayList<ExchangeMarket> getAvailableMarkets();
+
+    public abstract double getCurrentPrice(ExchangeMarket exchangeMarket);
+
+    public abstract ArrayList<ExchangeAction.ExchangeActions> getAvailableActions(
+            ExchangeMarket exchangeMarket);
 }

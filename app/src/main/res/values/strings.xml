@@ -5,4 +5,8 @@
     <string name="exchange_binance_name">Binance</string>
     <string name="exchanges_header">Exchanges</string>
     <string name="market_indicator_label" >Market:</string>
+    <string name="action_label">Action:</string>
+    <string name="buy_action">Buy</string>
+    <string name="unkonwn_action">Unknown</string>
+    <string name="sell_action">Sell</string>
 </resources>

@@ -8,4 +8,5 @@
     <dimen name="title">20sp</dimen>
     <dimen name="subheading">16sp</dimen>
     <dimen name="market_selection_max_width">200sp</dimen>
+    <dimen name="action_selection_max_width">200sp</dimen>
 </resources>
