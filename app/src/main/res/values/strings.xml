@@ -4,4 +4,5 @@
     <string name="exchange_bittrex_name">Bittrex</string>
     <string name="exchange_binance_name">Binance</string>
     <string name="exchanges_header">Exchanges</string>
+    <string name="market_indicator_label" >Market:</string>
 </resources>

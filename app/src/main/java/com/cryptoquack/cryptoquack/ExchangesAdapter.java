@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.cryptoquack.com.cryptoquack.model.exchange.Exchanges;
+import com.cryptoquack.model.exchange.Exchanges;
 
 import java.util.HashMap;
 
@@ -16,18 +16,18 @@ import java.util.HashMap;
 
 public class ExchangesAdapter extends RecyclerView.Adapter<ExchangesAdapter.ViewHolder> {
 
-    private Exchanges.Exchange[] myExchangeTypes;
-    private HashMap<Exchanges.Exchange, String> myExchangeTypeToNameMap;
-    private Context myContext;
-    private ExchangesRecyclerViewListener myExchangesRecyclerViewListener;
+    private Exchanges.Exchange[] exchangeTypes;
+    private HashMap<Exchanges.Exchange, String> exchangeTypeToNameMap;
+    private Context context;
+    private ExchangesRecyclerViewListener exchangesRecyclerViewListener;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView myTextView;
+        public TextView textView;
 
         public ViewHolder(TextView v) {
             super(v);
-            this.myTextView = v;
+            this.textView = v;
         }
     }
 
@@ -37,18 +37,18 @@ public class ExchangesAdapter extends RecyclerView.Adapter<ExchangesAdapter.View
 
     public ExchangesAdapter(Exchanges.Exchange[] exchangeTypes, HashMap<Exchanges.Exchange, String>
             exchangeTypeToNameMap, Context context) {
-        this.myExchangeTypes = exchangeTypes;
-        this.myExchangeTypeToNameMap = exchangeTypeToNameMap;
-        this.myContext = context;
+        this.exchangeTypes = exchangeTypes;
+        this.exchangeTypeToNameMap = exchangeTypeToNameMap;
+        this.context = context;
     }
 
     public void setCallBack(ExchangesRecyclerViewListener callBack) {
-        this.myExchangesRecyclerViewListener = callBack;
+        this.exchangesRecyclerViewListener = callBack;
     }
 
     @Override
     public ExchangesAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        TextView exchangeView = new TextView(this.myContext);
+        TextView exchangeView = new TextView(this.context);
         exchangeView.setTextSize(UICommon.LIST_TEXT_SIZE);
         ExchangesAdapter.ViewHolder vh = new ExchangesAdapter.ViewHolder(exchangeView);
         return vh;
@@ -56,20 +56,20 @@ public class ExchangesAdapter extends RecyclerView.Adapter<ExchangesAdapter.View
 
     @Override
     public void onBindViewHolder(ExchangesAdapter.ViewHolder holder, final int position) {
-        Exchanges.Exchange exchangeType = this.myExchangeTypes[position];
-        String name = this.myExchangeTypeToNameMap.get(exchangeType);
-        holder.myTextView.setOnClickListener(new View.OnClickListener() {
+        Exchanges.Exchange exchangeType = this.exchangeTypes[position];
+        String name = this.exchangeTypeToNameMap.get(exchangeType);
+        holder.textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                myExchangesRecyclerViewListener.onExchangeClick(myExchangeTypes, position);
+                exchangesRecyclerViewListener.onExchangeClick(exchangeTypes, position);
             }
         });
 
-        holder.myTextView.setText(name);
+        holder.textView.setText(name);
     }
 
     @Override
     public int getItemCount() {
-        return this.myExchangeTypes.length;
+        return this.exchangeTypes.length;
     }
 }

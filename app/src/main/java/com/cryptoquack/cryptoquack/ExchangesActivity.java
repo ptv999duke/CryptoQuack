@@ -6,14 +6,14 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import com.cryptoquack.com.cryptoquack.model.exchange.Common;
-import com.cryptoquack.com.cryptoquack.model.exchange.Exchanges;
+import com.cryptoquack.model.Common;
+import com.cryptoquack.model.exchange.Exchanges;
 
 public class ExchangesActivity extends CryptoQuackActivity {
 
-    private RecyclerView myRecyclerView;
-    private RecyclerView.LayoutManager myLayoutManager;
-    private ExchangesAdapter myAdapter;
+    private RecyclerView recyclerView;
+    private RecyclerView.LayoutManager layoutManager;
+    private ExchangesAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,13 +21,13 @@ public class ExchangesActivity extends CryptoQuackActivity {
         setContentView(R.layout.activity_exchanges);
 
         this.setTitle(getString(R.string.exchanges_header));
-        this.myRecyclerView = (RecyclerView) findViewById(R.id.exchange_list_recycler_view);
-        this.myRecyclerView.setHasFixedSize(true);
-        this.myLayoutManager = new LinearLayoutManager(this);
-        this.myRecyclerView.setLayoutManager(this.myLayoutManager);
+        this.recyclerView = (RecyclerView) findViewById(R.id.exchange_list_recycler_view);
+        this.recyclerView.setHasFixedSize(true);
+        this.layoutManager = new LinearLayoutManager(this);
+        this.recyclerView.setLayoutManager(this.layoutManager);
 
-        this.myAdapter = new ExchangesAdapter(Common.exchanges, this.myExchangeToNameMap, this);
-        this.myAdapter.setCallBack(new ExchangesAdapter.ExchangesRecyclerViewListener() {
+        this.adapter = new ExchangesAdapter(Common.exchanges, this.exchangeToNameMap, this);
+        this.adapter.setCallBack(new ExchangesAdapter.ExchangesRecyclerViewListener() {
 
             @Override
             public void onExchangeClick(Exchanges.Exchange[] exchanges, int position) {
@@ -40,9 +40,11 @@ public class ExchangesActivity extends CryptoQuackActivity {
             }
         });
 
-        this.myRecyclerView.setAdapter(this.myAdapter);
-        DividerItemDecoration deco = new DividerItemDecoration(this.myRecyclerView.getContext(),
+        this.recyclerView.setAdapter(this.adapter);
+        DividerItemDecoration deco = new DividerItemDecoration(this.recyclerView.getContext(),
                 DividerItemDecoration.VERTICAL);
-        this.myRecyclerView.addItemDecoration(deco);
+        this.recyclerView.addItemDecoration(deco);
     }
+
+
 }

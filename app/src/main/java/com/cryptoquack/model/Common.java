@@ -1,11 +1,6 @@
-package com.cryptoquack.com.cryptoquack.model.exchange;
+package com.cryptoquack.model;
 
-import com.cryptoquack.com.cryptoquack.model.exchange.Exchanges;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static android.provider.Settings.Global.getString;
+import com.cryptoquack.model.exchange.Exchanges;
 
 /**
  * Created by Duke on 1/20/2018.
