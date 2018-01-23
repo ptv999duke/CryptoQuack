@@ -3,6 +3,7 @@ package com.cryptoquack.model.exchange;
 import com.cryptoquack.model.currency.ExchangeMarket;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by Duke on 1/20/2018.
@@ -30,7 +31,13 @@ public class GeminiExchange extends BaseExchange {
 
     @Override
     public double getCurrentPrice(ExchangeMarket exchangeMarket) {
-        return 0.000;
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e){
+            throw new RuntimeException();
+        }
+        Random r = new Random();
+        return r.nextDouble();
     }
     @Override
     public ArrayList<ExchangeAction.ExchangeActions> getAvailableActions(

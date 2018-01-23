@@ -9,4 +9,10 @@
     <string name="buy_action">Buy</string>
     <string name="unkonwn_action">Unknown</string>
     <string name="sell_action">Sell</string>
+    <string name="loading">Loading...</string>
+    <string name="current_price_indicator_label">Current price:</string>
+    <string name="get_current_price_error">Error when getting current price</string>
+    <string name="quantity_indicator_label">Quantity:</string>
+    <string name="order_price_indicator_label">Order price:</string>
+    <string name="order_place">Place Order</string>
 </resources>
