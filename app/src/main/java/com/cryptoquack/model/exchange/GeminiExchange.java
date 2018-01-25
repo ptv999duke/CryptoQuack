@@ -1,6 +1,8 @@
 package com.cryptoquack.model.exchange;
 
 import com.cryptoquack.model.currency.ExchangeMarket;
+import com.cryptoquack.model.currency.MonetaryAmount;
+import com.cryptoquack.model.order.Order;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -39,9 +41,20 @@ public class GeminiExchange extends BaseExchange {
         Random r = new Random();
         return r.nextDouble();
     }
+
+    @Override
+    protected MonetaryAmount calculateFee(ExchangeAction action, MonetaryAmount amount) {
+        return null;
+    }
+
     @Override
     public ArrayList<ExchangeAction.ExchangeActions> getAvailableActions(
         ExchangeMarket exchangeMarket) {
         return (ArrayList<ExchangeAction.ExchangeActions>) this.availableActions.clone();
+    }
+
+    @Override
+    public Order makeOrder(ExchangeAction action, Order.OrderType orderType, MonetaryAmount monetaryAmount, ExchangeMarket exchangeMarket) {
+        return null;
     }
 }

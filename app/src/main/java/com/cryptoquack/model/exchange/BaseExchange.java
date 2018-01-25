@@ -3,6 +3,8 @@ package com.cryptoquack.model.exchange;
 import com.cryptoquack.model.currency.Currencies;
 import com.cryptoquack.model.credentials.ICredentials;
 import com.cryptoquack.model.currency.ExchangeMarket;
+import com.cryptoquack.model.currency.MonetaryAmount;
+import com.cryptoquack.model.order.Order;
 
 import java.util.ArrayList;
 
@@ -31,6 +33,16 @@ public abstract class BaseExchange {
 
     public abstract double getCurrentPrice(ExchangeMarket exchangeMarket);
 
+    public MonetaryAmount calculateFee(ExchangeAction action, MonetaryAmount amount,
+                               ExchangeMarket exchangeMarket) {
+        return this.calculateFee(action, amount);
+    }
+
+    protected abstract MonetaryAmount calculateFee(ExchangeAction action, MonetaryAmount amount);
+
     public abstract ArrayList<ExchangeAction.ExchangeActions> getAvailableActions(
             ExchangeMarket exchangeMarket);
+
+    public abstract Order makeOrder(ExchangeAction action, Order.OrderType orderType,
+                                    MonetaryAmount monetaryAmount, ExchangeMarket exchangeMarket);
 }

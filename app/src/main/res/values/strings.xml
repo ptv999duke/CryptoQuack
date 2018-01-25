@@ -15,4 +15,7 @@
     <string name="quantity_indicator_label">Quantity:</string>
     <string name="order_price_indicator_label">Order price:</string>
     <string name="order_place">Place Order</string>
+    <string name="subtotal_indicator_label">Subtotal:</string>
+    <string name="fee_indicator_label">Fee:</string>
+    <string name="total_price_label">Total:</string>
 </resources>
