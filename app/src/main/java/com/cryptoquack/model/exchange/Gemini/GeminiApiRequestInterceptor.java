@@ -35,7 +35,7 @@ public class GeminiApiRequestInterceptor implements Interceptor {
     private static final String PAYLOAD_HEADER = "X-GEMINI-PAYLOAD";
     private static final String SIGNATURE_HEADER = "X-GEMINI-SIGNATURE";
     private static final String NONCE_KEY = "nonce";
-    private static final String REQUEST_KEY = "nonce";
+    private static final String REQUEST_KEY = "request";
 
     private AccessKeyCredentials accessKeyCredentials;
     private SecretKeySpec signingKey;
@@ -106,8 +106,7 @@ public class GeminiApiRequestInterceptor implements Interceptor {
             long epochTime = System.currentTimeMillis();
             jsonObj.put(this.REQUEST_KEY, relativeUrl);
         }
-
-        new Gson().toJson(jsonObj);
+        
         return jsonObj.toString();
     }
 
