@@ -1,5 +1,6 @@
 package com.cryptoquack.model.exchange;
 
+import com.cryptoquack.model.credentials.AccessKeyCredentials;
 import com.cryptoquack.model.currency.Currencies;
 import com.cryptoquack.model.credentials.ICredentials;
 import com.cryptoquack.model.currency.ExchangeMarket;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 public abstract class BaseExchange {
 
     protected Exchanges.Exchange exchangeType;
-    protected ICredentials credentials;
+    protected AccessKeyCredentials credentials;
 
     public BaseExchange(Exchanges.Exchange exchangeType) {
         this.exchangeType = exchangeType;
@@ -25,24 +26,21 @@ public abstract class BaseExchange {
         return this.exchangeType;
     }
 
-    public void setCredentials(ICredentials credentials) {
+    public void setCredentials(AccessKeyCredentials credentials) {
         this.credentials = credentials;
     }
 
     public abstract ArrayList<ExchangeMarket> getAvailableMarkets();
 
-    public abstract double getCurrentPrice(ExchangeMarket exchangeMarket);
+    public abstract double getCurrentPrice(ExchangeMarket market);
 
-    public MonetaryAmount calculateFee(ExchangeAction action, MonetaryAmount amount,
-                               ExchangeMarket exchangeMarket) {
-        return this.calculateFee(action, amount);
-    }
-
-    protected abstract MonetaryAmount calculateFee(ExchangeAction action, MonetaryAmount amount);
+    public abstract MonetaryAmount calculateFee(ExchangeAction action, MonetaryAmount amount,
+                               ExchangeMarket market);
 
     public abstract ArrayList<ExchangeAction.ExchangeActions> getAvailableActions(
-            ExchangeMarket exchangeMarket);
+            ExchangeMarket market);
 
     public abstract Order makeOrder(ExchangeAction action, Order.OrderType orderType,
-                                    MonetaryAmount monetaryAmount, ExchangeMarket exchangeMarket);
+                                    MonetaryAmount monetaryAmount, ExchangeMarket market);
+
 }

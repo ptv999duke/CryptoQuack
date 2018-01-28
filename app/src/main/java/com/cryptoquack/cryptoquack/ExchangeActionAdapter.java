@@ -32,7 +32,7 @@ public class ExchangeActionAdapter extends ArrayAdapter<ExchangeAction.ExchangeA
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_market_action, parent, false);
         }
 
-        TextView exchangeMarketActionView = (TextView) convertView.findViewById(R.id.exchange_market_action);
+        TextView marketActionView = (TextView) convertView.findViewById(R.id.exchange_market_action);
         String actionString = this.context.getString(R.string.unkonwn_action);
         if (exchangeAction == ExchangeAction.ExchangeActions.BUY) {
             actionString = this.context.getString(R.string.buy_action);
@@ -40,7 +40,7 @@ public class ExchangeActionAdapter extends ArrayAdapter<ExchangeAction.ExchangeA
             actionString = this.context.getString(R.string.sell_action);
         }
 
-        exchangeMarketActionView.setText(actionString);
+        marketActionView.setText(actionString);
         return convertView;
     }
 }

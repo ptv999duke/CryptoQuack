@@ -23,14 +23,14 @@ public class ExchangeMarketAdapter extends ArrayAdapter<ExchangeMarket> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ExchangeMarket exchangeMarket = getItem(position);
+        ExchangeMarket market = getItem(position);
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_market_exchange, parent, false);
         }
 
-        TextView exchangeMarketNameView = (TextView) convertView.findViewById(R.id.exchange_market_name);
-        String marketName = exchangeMarket.toString();
-        exchangeMarketNameView.setText(marketName);
+        TextView marketNameView = (TextView) convertView.findViewById(R.id.exchange_market_name);
+        String marketName = market.toString();
+        marketNameView.setText(marketName);
         return convertView;
     }
 }

@@ -1,23 +1,22 @@
 package com.cryptoquack.cryptoquack;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.cryptoquack.model.credentials.AccessKeyCredentials;
 import com.cryptoquack.model.currency.ExchangeMarket;
 import com.cryptoquack.model.exchange.BaseExchange;
 import com.cryptoquack.model.exchange.ExchangeAction;
 import com.cryptoquack.model.exchange.Exchanges;
-import com.cryptoquack.model.exchange.GeminiExchange;
+import com.cryptoquack.model.exchange.Gemini.GeminiExchange;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -32,7 +31,7 @@ public class TradingActivity extends CryptoQuackActivity {
     private ArrayList<ExchangeMarket> availableMarkets;
 
     // UI elements
-    private ExchangeMarketAdapter exchangeMarketAdapter;
+    private ExchangeMarketAdapter marketAdapter;
     private Spinner marketChoiceSpinner;
     private Spinner actionChoiceSpinner;
     private TableRow actionRow;
@@ -55,8 +54,8 @@ public class TradingActivity extends CryptoQuackActivity {
 
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            ExchangeMarket exchangeMarket = (ExchangeMarket) parent.getItemAtPosition(position);
-            this.tradingActivity.onExchangeMarketChanged(exchangeMarket);
+            ExchangeMarket market = (ExchangeMarket) parent.getItemAtPosition(position);
+            this.tradingActivity.onExchangeMarketChanged(market);
         }
 
         @Override
@@ -104,30 +103,30 @@ public class TradingActivity extends CryptoQuackActivity {
 
     private void initializeActivity() {
         this.setTitle(this.getExchangeName(this.exchangeType));
-        ExchangeMarketAdapter exchangeMarketAdapter = new ExchangeMarketAdapter(this,
+        ExchangeMarketAdapter marketAdapter = new ExchangeMarketAdapter(this,
                 android.R.layout.simple_spinner_item, this.availableMarkets);
-        this.exchangeMarketAdapter = exchangeMarketAdapter;
-        this.exchangeMarketAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        this.marketChoiceSpinner.setAdapter(this.exchangeMarketAdapter);
+        this.marketAdapter = marketAdapter;
+        this.marketAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        this.marketChoiceSpinner.setAdapter(this.marketAdapter);
         MarketExchangeSpinnerActivity marketExchangeSpinnerActivity = new MarketExchangeSpinnerActivity(this);
         this.marketChoiceSpinner.setOnItemSelectedListener(marketExchangeSpinnerActivity);
     }
 
-    private void onExchangeMarketChanged(ExchangeMarket exchangeMarket) {
+    private void onExchangeMarketChanged(ExchangeMarket market) {
         this.resetCurrentPrice();
-        if (exchangeMarket == null) {
+        if (market == null) {
             this.actionRow.setVisibility(View.INVISIBLE);
             this.currentPriceTextView.setVisibility(View.INVISIBLE);
             // TODO: Implement clearing out all the info on screen.
         } else {
             ArrayList<ExchangeAction.ExchangeActions> availbleActions = this.exchange.
-                    getAvailableActions(exchangeMarket);
+                    getAvailableActions(market);
             ExchangeActionAdapter exchangeActionAdapter = new ExchangeActionAdapter(this,
                     android.R.layout.simple_spinner_item, availbleActions);
             exchangeActionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             this.actionChoiceSpinner.setAdapter(exchangeActionAdapter);
             this.currentPriceTextView.setText(this.defaultLoadingString);
-            GetCurrentPriceTaskParameter params = new GetCurrentPriceTaskParameter(exchangeMarket,
+            GetCurrentPriceTaskParameter params = new GetCurrentPriceTaskParameter(market,
                     this.exchange);
             this.scheduleGetCurrentPriceTask(params);
 
@@ -161,20 +160,20 @@ public class TradingActivity extends CryptoQuackActivity {
             }
         };
 
-        this.getCurrentPriceTimer.schedule(doAsynchronousTask, 0, 5000); //execute in every 50000 ms
+        this.getCurrentPriceTimer.schedule(doAsynchronousTask, 0, 2500); //execute in every 50000 ms
     }
 
     private static class GetCurrentPriceTaskParameter {
-        private ExchangeMarket exchangeMarket;
+        private ExchangeMarket market;
         private BaseExchange exchange;
 
-        public GetCurrentPriceTaskParameter(ExchangeMarket exchangeMarket, BaseExchange exchange) {
-            this.exchangeMarket = exchangeMarket;
+        public GetCurrentPriceTaskParameter(ExchangeMarket market, BaseExchange exchange) {
+            this.market = market;
             this.exchange = exchange;
         }
 
         public ExchangeMarket getExchangeMarket() {
-            return this.exchangeMarket;
+            return this.market;
         }
 
         public BaseExchange getExchange() {
