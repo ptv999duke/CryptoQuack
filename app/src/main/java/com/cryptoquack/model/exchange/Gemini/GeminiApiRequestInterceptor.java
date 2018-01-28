@@ -103,10 +103,9 @@ public class GeminiApiRequestInterceptor implements Interceptor {
         }
 
         if (!jsonObj.has(this.REQUEST_KEY)) {
-            long epochTime = System.currentTimeMillis();
             jsonObj.put(this.REQUEST_KEY, relativeUrl);
         }
-        
+
         return jsonObj.toString();
     }
 

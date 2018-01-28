@@ -21,13 +21,20 @@ public class ExchangeMarket {
     public static final ExchangeMarket NEOETH = new ExchangeMarket(Currencies.Currency.NEO, Currencies.Currency.ETH);
     public static final ExchangeMarket NEOUSDT = new ExchangeMarket(Currencies.Currency.NEO, Currencies.Currency.USDT);
 
-
     private Currencies.Currency sourceCurrency;
     private Currencies.Currency destinationCurrency;
 
     public ExchangeMarket(Currencies.Currency sourceCurrency, Currencies.Currency destinationCurrency) {
         this.sourceCurrency = sourceCurrency;
         this.destinationCurrency = destinationCurrency;
+    }
+
+    public Currencies.Currency getSourceCurrency() {
+        return sourceCurrency;
+    }
+
+    public Currencies.Currency getDestinationCurrency() {
+        return destinationCurrency;
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.cryptoquack.model.exchange.Gemini;
 
 import com.cryptoquack.model.currency.Currencies;
 import com.cryptoquack.model.currency.ExchangeMarket;
+import com.cryptoquack.model.exchange.ExchangeAction;
 import com.cryptoquack.model.exchange.Exchanges;
 
 import java.security.InvalidParameterException;
@@ -16,13 +17,23 @@ public class GeminiHelper {
     private static final HashMap<ExchangeMarket, String> marketSymbolMap = new HashMap<>();
     private static final HashMap<String, ExchangeMarket> symbolMarketMap = new HashMap<>();
 
+    private static final HashMap<ExchangeAction.ExchangeActions, String> actionActionSymbolMap =
+            new HashMap<>();
+    private static final HashMap<String, ExchangeAction.ExchangeActions> actionSymbolActionMap =
+            new HashMap<>();
+
     static {
         GeminiHelper.marketSymbolMap.put(ExchangeMarket.BTCUSD, "btcusd");
         GeminiHelper.marketSymbolMap.put(ExchangeMarket.ETHUSD, "ethusd");
         GeminiHelper.marketSymbolMap.put(ExchangeMarket.ETHBTC, "ethbtc");
-
         for (ExchangeMarket market : GeminiHelper.marketSymbolMap.keySet()) {
-            symbolMarketMap.put(marketSymbolMap.get(market), market);
+            GeminiHelper.symbolMarketMap.put(marketSymbolMap.get(market), market);
+        }
+
+        GeminiHelper.actionActionSymbolMap.put(ExchangeAction.ExchangeActions.BUY, "buy");
+        GeminiHelper.actionActionSymbolMap.put(ExchangeAction.ExchangeActions.SELL, "sell");
+        for (ExchangeAction.ExchangeActions action : GeminiHelper.actionActionSymbolMap.keySet()) {
+            GeminiHelper.actionSymbolActionMap.put(actionActionSymbolMap.get(action), action);
         }
     }
 
@@ -55,5 +66,19 @@ public class GeminiHelper {
         }
 
         return market;
+    }
+
+    public static String convertActionToActionSymbol(ExchangeAction.ExchangeActions action) {
+        if (action == null) {
+            throw new NullPointerException();
+        }
+
+        String symbol = GeminiHelper.actionActionSymbolMap.get(action);
+        if (symbol == null) {
+            throw new InvalidParameterException(String.format("Unsupported action type: {0}"
+                    , action));
+        }
+
+        return symbol;
     }
 }

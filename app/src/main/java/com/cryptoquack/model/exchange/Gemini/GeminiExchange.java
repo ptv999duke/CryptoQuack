@@ -1,5 +1,6 @@
 package com.cryptoquack.model.exchange.Gemini;
 
+import com.cryptoquack.exceptions.UnavailableActionException;
 import com.cryptoquack.exceptions.UnavailableMarketException;
 import com.cryptoquack.model.credentials.AccessKeyCredentials;
 import com.cryptoquack.model.currency.ExchangeMarket;
@@ -7,13 +8,14 @@ import com.cryptoquack.model.currency.MonetaryAmount;
 import com.cryptoquack.model.exchange.BaseExchange;
 import com.cryptoquack.model.exchange.ExchangeAction;
 import com.cryptoquack.model.exchange.Exchanges;
-import com.cryptoquack.model.exchange.Gemini.DTO.Ticker;
+import com.cryptoquack.model.exchange.Gemini.DTO.GeminiNewOrderRequest;
+import com.cryptoquack.model.exchange.Gemini.DTO.GeminiOrder;
+import com.cryptoquack.model.exchange.Gemini.DTO.GeminiTicker;
 import com.cryptoquack.model.order.Order;
 
 import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
-import java.util.Random;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
@@ -86,12 +88,12 @@ public class GeminiExchange extends BaseExchange {
             throw new UnavailableMarketException(e.getMessage(), e);
         }
 
-        Call<Ticker> tickerCall = this.apiClient.getPubTicker(symbol);
+        Call<GeminiTicker> tickerCall = this.apiClient.getPubTicker(symbol);
         try {
-            Response<Ticker> response = tickerCall.execute();
+            Response<GeminiTicker> response = tickerCall.execute();
             int statusCode = response.code();
-            Ticker ticker = response.body();
-            return ticker.lastPrice;
+            GeminiTicker ticker = response.body();
+            return ticker.getLastPrice();
         } catch (IOException e) {
             throw new RuntimeException();
         }
@@ -110,8 +112,30 @@ public class GeminiExchange extends BaseExchange {
     }
 
     @Override
-    public Order makeOrder(ExchangeAction action, Order.OrderType orderType,
-                           MonetaryAmount monetaryAmount, ExchangeMarket market) {
-        return null;
+    public Order makeOrder(ExchangeAction.ExchangeActions action, Order.OrderType orderType,
+                           MonetaryAmount monetaryAmount, double price, ExchangeMarket market) {
+        if (!monetaryAmount.getCurrency().equals(market.getSourceCurrency())) {
+            throw new InvalidParameterException("Currency specified for monetary amount must match the " +
+                    "source currency of the market");
+        }
+
+        if (!orderType.equals(Order.OrderType.LIMIT)) {
+            throw new UnavailableActionException(action);
+        } else {
+            String actionSymbol = GeminiHelper.convertActionToActionSymbol(action);
+            String marketSymbol = GeminiHelper.convertMarketToSymbol(market);
+
+            GeminiNewOrderRequest orderRequest = new GeminiNewOrderRequest(marketSymbol,
+                    monetaryAmount.getAmount(), price, actionSymbol);
+            Call<GeminiOrder> newOrderCall = this.apiClient.newOrder(orderRequest);
+            try {
+                Response<GeminiOrder> response = newOrderCall.execute();
+                int statusCode = response.code();
+                GeminiOrder order = response.body();
+                return order.convertToOrder();
+            } catch (IOException e) {
+                throw new RuntimeException();
+            }
+        }
     }
 }

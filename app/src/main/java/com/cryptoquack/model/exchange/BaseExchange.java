@@ -40,7 +40,7 @@ public abstract class BaseExchange {
     public abstract ArrayList<ExchangeAction.ExchangeActions> getAvailableActions(
             ExchangeMarket market);
 
-    public abstract Order makeOrder(ExchangeAction action, Order.OrderType orderType,
-                                    MonetaryAmount monetaryAmount, ExchangeMarket market);
+    public abstract Order makeOrder(ExchangeAction.ExchangeActions action, Order.OrderType orderType,
+                                    MonetaryAmount monetaryAmount, double price, ExchangeMarket market);
 
 }

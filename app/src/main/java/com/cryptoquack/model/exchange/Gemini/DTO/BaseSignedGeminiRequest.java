@@ -1,17 +1,17 @@
 package com.cryptoquack.model.exchange.Gemini.DTO;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by Duke on 1/27/2018.
  */
 
 public abstract class BaseSignedGeminiRequest {
 
-    protected int nonce;
-    protected String requestName;
-
-    public void setNonce(int nonce) {
-        this.nonce = nonce;
-    }
+    @Expose
+    @SerializedName("request")
+    protected String requestName = null;
 
     public void setRequestName(String requestName) {
         this.requestName = requestName;
