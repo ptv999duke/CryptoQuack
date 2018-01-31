@@ -9,6 +9,8 @@ import com.cryptoquack.model.order.Order;
 
 import java.util.ArrayList;
 
+import io.reactivex.Single;
+
 /**
  * Created by Duke on 1/20/2018.
  */
@@ -32,7 +34,9 @@ public abstract class BaseExchange {
 
     public abstract ArrayList<ExchangeMarket> getAvailableMarkets();
 
-    public abstract double getCurrentPrice(ExchangeMarket market);
+    public abstract Double getCurrentPrice(ExchangeMarket market);
+
+    public abstract Single<Double> getCurrentPriceAsync(ExchangeMarket market);
 
     public abstract MonetaryAmount calculateFee(ExchangeAction action, MonetaryAmount amount,
                                ExchangeMarket market);

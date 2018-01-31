@@ -17,11 +17,17 @@ import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 
+import io.reactivex.Single;
+import io.reactivex.SingleSource;
+import io.reactivex.functions.Function;
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import rx.observables.BlockingObservable;
+import rx.singles.BlockingSingle;
 
 /**
  * Created by Duke on 1/20/2018.
@@ -52,6 +58,7 @@ public class GeminiExchange extends BaseExchange {
 
     private void initializeApiClient() {
         Retrofit.Builder apiClientBuilder = new Retrofit.Builder();
+        apiClientBuilder.addCallAdapterFactory(RxJavaCallAdapterFactory.create());
         String baseUrl = this.useSandbox ? GeminiHelper.SANDBOX_REST_API_URL : GeminiHelper.REST_API_URL;
         apiClientBuilder.baseUrl(baseUrl);
         OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder();
@@ -80,7 +87,7 @@ public class GeminiExchange extends BaseExchange {
     }
 
     @Override
-    public double getCurrentPrice(ExchangeMarket market) throws UnavailableMarketException {
+    public Single<Double> getCurrentPriceAsync(ExchangeMarket market) throws UnavailableMarketException {
         String symbol;
         try {
             symbol = GeminiHelper.convertMarketToSymbol(market);
@@ -88,13 +95,25 @@ public class GeminiExchange extends BaseExchange {
             throw new UnavailableMarketException(e.getMessage(), e);
         }
 
-        Call<GeminiTicker> tickerCall = this.apiClient.getPubTicker(symbol);
+        Single<Double> single = this.apiClient.getPubTicker(symbol)
+                .flatMap(new Function<GeminiTicker, SingleSource<Double>>() {
+                    @Override
+                    public SingleSource<Double> apply(GeminiTicker ticker) {
+                        Double price = ticker.getLastPrice();
+                        return Single.just((price));
+                    }
+                });
+        return single;
+    }
+
+    @Override
+    public Double getCurrentPrice(ExchangeMarket market) throws UnavailableMarketException {
+        Single<Double> single = this.getCurrentPriceAsync(market);
+
         try {
-            Response<GeminiTicker> response = tickerCall.execute();
-            int statusCode = response.code();
-            GeminiTicker ticker = response.body();
-            return ticker.getLastPrice();
-        } catch (IOException e) {
+            Double price = single.blockingGet();
+            return price;
+        } catch (Exception e) {
             throw new RuntimeException();
         }
     }
@@ -127,15 +146,16 @@ public class GeminiExchange extends BaseExchange {
 
             GeminiNewOrderRequest orderRequest = new GeminiNewOrderRequest(marketSymbol,
                     monetaryAmount.getAmount(), price, actionSymbol);
-            Call<GeminiOrder> newOrderCall = this.apiClient.newOrder(orderRequest);
-            try {
-                Response<GeminiOrder> response = newOrderCall.execute();
-                int statusCode = response.code();
-                GeminiOrder order = response.body();
-                return order.convertToOrder();
-            } catch (IOException e) {
-                throw new RuntimeException();
-            }
+            Single<GeminiOrder> newOrderCall = this.apiClient.newOrder(orderRequest);
+            return null;
+//            try {
+//                Response<GeminiOrder> response = newOrderCall.execute();
+//                int statusCode = response.code();
+//                GeminiOrder order = response.body();
+//                return order.convertToOrder();
+//            } catch (IOException e) {
+//                throw new RuntimeException();
+//            }
         }
     }
 }
