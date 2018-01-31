@@ -1,9 +1,7 @@
 package com.cryptoquack.cryptoquack.View;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -17,7 +15,7 @@ import com.cryptoquack.cryptoquack.ExchangeMarketAdapter;
 import com.cryptoquack.cryptoquack.Presenter.ITradingPresenter;
 import com.cryptoquack.cryptoquack.Presenter.TradingPresenter;
 import com.cryptoquack.cryptoquack.R;
-import com.cryptoquack.cryptoquack.ResourceManager;
+import com.cryptoquack.cryptoquack.AndroidResourceManager;
 import com.cryptoquack.model.IModel;
 import com.cryptoquack.model.Model;
 import com.cryptoquack.model.currency.Currencies;
@@ -25,11 +23,8 @@ import com.cryptoquack.model.currency.ExchangeMarket;
 import com.cryptoquack.model.exchange.BaseExchange;
 import com.cryptoquack.model.exchange.ExchangeAction;
 import com.cryptoquack.model.exchange.Exchanges;
-import com.cryptoquack.model.exchange.Gemini.GeminiExchange;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
@@ -81,6 +76,13 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
     @Override
     public void setAvailableMarkets(ArrayList<ExchangeMarket> availableMarkets) {
         this.availableMarkets = availableMarkets;
+        ExchangeMarketAdapter marketAdapter = new ExchangeMarketAdapter(this,
+                android.R.layout.simple_spinner_item, this.availableMarkets);
+        this.marketAdapter = marketAdapter;
+        this.marketAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        this.marketChoiceSpinner.setAdapter(this.marketAdapter);
+        MarketExchangeSpinnerActivity marketExchangeSpinnerActivity = new MarketExchangeSpinnerActivity(this);
+        this.marketChoiceSpinner.setOnItemSelectedListener(marketExchangeSpinnerActivity);
     }
 
     @Override
@@ -126,7 +128,7 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
         super();
         IModel model = new Model();
         this.model = model;
-        this.presenter = new TradingPresenter(AndroidSchedulers.mainThread(), new ResourceManager());
+        this.presenter = new TradingPresenter(AndroidSchedulers.mainThread());
         // this.getCurrentPriceTimer = new Timer();
     }
 
@@ -143,9 +145,6 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
         Exchanges.Exchange exchangeType = Exchanges.Exchange.valueOf(exchangeTypeString);
         this.exchangeType = exchangeType;
 
-        this.availableMarkets = this.model.getAvailableMarkets(this.exchangeType);
-        this.presenter.onCreate(this.model, this.exchangeType);
-
         this.marketChoiceSpinner = (Spinner) findViewById(R.id.market_choice_spinner);
         this.actionChoiceSpinner = (Spinner) findViewById(R.id.action_choice_spinner);
         this.actionRow = (TableRow) findViewById(R.id.action_row);
@@ -153,24 +152,13 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
         this.currentPriceTextView = (TextView) findViewById(R.id.current_price_text_view);
         this.quantityEditText = (EditText)  findViewById(R.id.quantity_edit_text);
         // this.defaultLoadingString = getString(R.string.loading);
+        this.setTitle(this.getExchangeName(this.exchangeType));
 
-        this.initializeModel();
-        this.initializeActivity();
+        this.presenter.onCreate(this, this.model, new AndroidResourceManager(this.getResources()), this.exchangeType);
     }
 
     private void initializeModel() {
 
-    }
-
-    private void initializeActivity() {
-        this.setTitle(this.getExchangeName(this.exchangeType));
-        ExchangeMarketAdapter marketAdapter = new ExchangeMarketAdapter(this,
-                android.R.layout.simple_spinner_item, this.availableMarkets);
-        this.marketAdapter = marketAdapter;
-        this.marketAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        this.marketChoiceSpinner.setAdapter(this.marketAdapter);
-        MarketExchangeSpinnerActivity marketExchangeSpinnerActivity = new MarketExchangeSpinnerActivity(this);
-        this.marketChoiceSpinner.setOnItemSelectedListener(marketExchangeSpinnerActivity);
     }
 
     private void onExchangeMarketChanged(ExchangeMarket market) {

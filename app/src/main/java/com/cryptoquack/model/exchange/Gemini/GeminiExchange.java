@@ -24,10 +24,8 @@ import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import rx.observables.BlockingObservable;
-import rx.singles.BlockingSingle;
 
 /**
  * Created by Duke on 1/20/2018.
@@ -58,7 +56,6 @@ public class GeminiExchange extends BaseExchange {
 
     private void initializeApiClient() {
         Retrofit.Builder apiClientBuilder = new Retrofit.Builder();
-        apiClientBuilder.addCallAdapterFactory(RxJavaCallAdapterFactory.create());
         String baseUrl = this.useSandbox ? GeminiHelper.SANDBOX_REST_API_URL : GeminiHelper.REST_API_URL;
         apiClientBuilder.baseUrl(baseUrl);
         OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder();
@@ -67,6 +64,7 @@ public class GeminiExchange extends BaseExchange {
         httpClientBuilder.interceptors().add(new GeminiApiRequestInterceptor(this.credentials));
         apiClientBuilder.client(httpClientBuilder.build());
         apiClientBuilder.addConverterFactory(GsonConverterFactory.create());
+        apiClientBuilder.addCallAdapterFactory(RxJava2CallAdapterFactory.create());
         Retrofit r = apiClientBuilder.build();
         this.apiClient = r.create(GeminiApiClientV1.class);
     }

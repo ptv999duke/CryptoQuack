@@ -13,9 +13,13 @@ import com.cryptoquack.model.order.Order;
 import java.util.ArrayList;
 
 import io.reactivex.Observable;
+import io.reactivex.Observer;
 import io.reactivex.Scheduler;
 import io.reactivex.Single;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.observers.ResourceObserver;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -29,19 +33,20 @@ public class TradingPresenter implements ITradingPresenter {
     private Exchanges.Exchange exchange;
     private Scheduler uiScheduler;
     private Scheduler bgScheduler;
-    private Disposable getCurrentPriceSubscription;
+    private ResourceObserver<Double> getCurrentPriceSubscription;
     private IResourceManager rm;
 
-    public TradingPresenter(Scheduler uiScheduler, IResourceManager rm) {
+    public TradingPresenter(Scheduler uiScheduler) {
         this.uiScheduler = uiScheduler;
         this.bgScheduler = Schedulers.io();
-        this.rm = rm;
     }
 
     @Override
-    public void onCreate(IModel model, Exchanges.Exchange exchange) {
+    public void onCreate(ITradingView view, IModel model, IResourceManager rm, Exchanges.Exchange exchange) {
+        this.view = view;
         this.model = model;
         this.exchange = exchange;
+        this.rm = rm;
         ArrayList<ExchangeMarket> availableMarkets = this.model.getAvailableMarkets(this.exchange);
         this.view.setAvailableMarkets(availableMarkets);
     }
@@ -62,23 +67,39 @@ public class TradingPresenter implements ITradingPresenter {
         this.registerCurrentPriceGetter(this.exchange, market);
     }
 
-    private void registerCurrentPriceGetter(Exchanges.Exchange exchange, ExchangeMarket market) {
+    private void registerCurrentPriceGetter(Exchanges.Exchange exchange, final ExchangeMarket market) {
         Single<Double> single = this.model.getCurrentPriceAsync(exchange, market);
         Observable<Double> observable = single.toObservable();
-        Disposable getCurrentPriceSubscription = observable.subscribeOn(this.bgScheduler)
-                .observeOn(this.uiScheduler)
-                .subscribe(price -> {
-                    String priceString = null;
-                    Currencies.Currency destinationCurrency = market.getDestinationCurrency();
-                    if (destinationCurrency.equals(Currencies.Currency.USD)) {
-                        priceString = String.format("$%s", price);
-                    } else {
-                        priceString = String.format("%d %s", price, destinationCurrency.toString());
-                    }
+        ResourceObserver<Double> observer = new ResourceObserver<Double>() {
+            @Override
+            public void onNext(@NonNull Double price) {
+                String priceString = null;
+                Currencies.Currency destinationCurrency = market.getDestinationCurrency();
+                if (destinationCurrency.equals(Currencies.Currency.USD)) {
+                    priceString = String.format("$%s", price);
+                } else {
+                    priceString = String.format("%f %s", price, destinationCurrency.toString());
+                }
 
-                    this.view.updateCurrentPrice(priceString);
-                });
-        this.getCurrentPriceSubscription = getCurrentPriceSubscription;
+                view.updateCurrentPrice(priceString);
+            }
+
+            @Override
+            public void onError(@NonNull Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        };
+
+        observable.subscribeOn(this.bgScheduler)
+                .observeOn(this.uiScheduler)
+                .subscribe(observer);
+
+        this.getCurrentPriceSubscription = observer;
     }
 
     @Override
