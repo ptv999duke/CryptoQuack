@@ -11,14 +11,18 @@ import com.cryptoquack.model.exchange.Exchanges;
 import com.cryptoquack.model.order.Order;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.Scheduler;
 import io.reactivex.Single;
+import io.reactivex.SingleObserver;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.observers.ResourceObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -33,8 +37,10 @@ public class TradingPresenter implements ITradingPresenter {
     private Exchanges.Exchange exchange;
     private Scheduler uiScheduler;
     private Scheduler bgScheduler;
-    private ResourceObserver<Double> getCurrentPriceSubscription;
+    private DisposableSingleObserver<Double> getCurrentPriceSubscription;
     private IResourceManager rm;
+
+    private Timer getCurrentPriceTimer;
 
     public TradingPresenter(Scheduler uiScheduler) {
         this.uiScheduler = uiScheduler;
@@ -53,53 +59,64 @@ public class TradingPresenter implements ITradingPresenter {
 
     @Override
     public void onMarketChanged(ExchangeMarket market) {
-        this.view.updateOrderFee(0.0, market.getDestinationCurrency());
-        this.view.updateSubtotal(0.0, market.getDestinationCurrency());
-        this.view.updateOrderTotal(0.0, market.getDestinationCurrency());
-        ArrayList<ExchangeAction.ExchangeActions> availableActions =  this.model.getAvailableActions
-                (this.exchange, market);
-        this.view.setAvailableActions(availableActions);
+        if (this.getCurrentPriceTimer != null) {
+            this.getCurrentPriceTimer.cancel();
+            this.getCurrentPriceTimer.purge();
+        }
+
         if (this.getCurrentPriceSubscription != null) {
             this.getCurrentPriceSubscription.dispose();
         }
 
-        this.view.updateCurrentPrice(this.rm.getPriceLoadingString());
-        this.registerCurrentPriceGetter(this.exchange, market);
+        String zeroString = new MonetaryAmount(0.0, market.getDestinationCurrency()).toString();
+        this.view.updateOrderFee(zeroString);
+        this.view.updateSubtotal(zeroString);
+        this.view.updateOrderTotal(zeroString);
+        if (market != null) {
+            ArrayList<ExchangeAction.ExchangeActions> availableActions =  this.model.getAvailableActions
+                    (this.exchange, market);
+            this.view.setAvailableActions(availableActions);
+            this.view.updateCurrentPrice(this.rm.getPriceLoadingString());
+            this.registerCurrentPriceGetter(this.exchange, market);
+        }
     }
 
-    private void registerCurrentPriceGetter(Exchanges.Exchange exchange, final ExchangeMarket market) {
-        Single<Double> single = this.model.getCurrentPriceAsync(exchange, market);
-        Observable<Double> observable = single.toObservable();
-        ResourceObserver<Double> observer = new ResourceObserver<Double>() {
-            @Override
-            public void onNext(@NonNull Double price) {
-                String priceString = null;
-                Currencies.Currency destinationCurrency = market.getDestinationCurrency();
-                if (destinationCurrency.equals(Currencies.Currency.USD)) {
-                    priceString = String.format("$%s", price);
-                } else {
-                    priceString = String.format("%f %s", price, destinationCurrency.toString());
-                }
-
-                view.updateCurrentPrice(priceString);
-            }
+    private void registerCurrentPriceGetter(final Exchanges.Exchange exchange, final ExchangeMarket market) {
+        this.getCurrentPriceTimer = new Timer();
+        TimerTask doAsynchronousTask = new TimerTask() {
 
             @Override
-            public void onError(@NonNull Throwable e) {
+            public void run() {
+                Single<Double> single = model.getCurrentPriceAsync(exchange, market);
+                DisposableSingleObserver<Double> subscription = new DisposableSingleObserver<Double>() {
 
-            }
+                    @Override
+                    public void onSuccess(@NonNull Double price) {
+                        String priceString = null;
+                        Currencies.Currency destinationCurrency = market.getDestinationCurrency();
+                        if (destinationCurrency.equals(Currencies.Currency.USD)) {
+                            priceString = String.format("$%s", price);
+                        } else {
+                            priceString = String.format("%f %s", price, destinationCurrency.toString());
+                        }
 
-            @Override
-            public void onComplete() {
+                        view.updateCurrentPrice(priceString);
+                    }
 
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        // TODO: If error occurrs too many times in a row, display a warning/error.
+                    }
+                };
+
+                single.subscribeOn(bgScheduler)
+                        .observeOn(uiScheduler)
+                        .subscribe(subscription);
+                getCurrentPriceSubscription = subscription;
             }
         };
 
-        observable.subscribeOn(this.bgScheduler)
-                .observeOn(this.uiScheduler)
-                .subscribe(observer);
-
-        this.getCurrentPriceSubscription = observer;
+        this.getCurrentPriceTimer.schedule(doAsynchronousTask, 0, 2500);
     }
 
     @Override
@@ -122,12 +139,36 @@ public class TradingPresenter implements ITradingPresenter {
 
     @Override
     public void onOrderPriceEntered(ExchangeMarket market, ExchangeAction.ExchangeActions action,
-                                    double amount, double price) {
+                                    String quantity, String price) {
         double subtotal = 0.0;
         double total = 0.0;
-        MonetaryAmount fee = new MonetaryAmount(0.0, market.getDestinationCurrency());
-        if (amount > 0.0 && price > 0.0) {
-            subtotal = amount * price;
+        double quantityDouble = 0.0;
+        double priceDouble = 0.0;
+        Currencies.Currency destinationCurrency = market.getDestinationCurrency();
+        MonetaryAmount fee = new MonetaryAmount(0.0, destinationCurrency);
+        boolean incorrectValues = false;
+        try {
+            quantityDouble = Double.parseDouble(quantity);
+            if (quantityDouble < 0.0) {
+                incorrectValues = true;
+                quantityDouble = 0.0;
+            }
+        } catch (NumberFormatException e) {
+            incorrectValues = true;
+        }
+
+        try {
+            priceDouble = Double.parseDouble(price);
+            if (priceDouble < 0.0) {
+                incorrectValues = true;
+                priceDouble = 0.0;
+            }
+        } catch (NumberFormatException e) {
+            incorrectValues = true;
+        }
+
+        if (!incorrectValues) {
+            subtotal = quantityDouble * priceDouble;
             MonetaryAmount monetaryAmount = new MonetaryAmount(subtotal, market.getSourceCurrency());
             fee = this.model.calculateFee(this.exchange, action, monetaryAmount, market);
             if (action.equals(ExchangeAction.ExchangeActions.BUY)) {
@@ -137,14 +178,15 @@ public class TradingPresenter implements ITradingPresenter {
             }
         }
 
-        this.view.updateSubtotal(subtotal, market.getDestinationCurrency());
-        this.view.updateOrderFee(fee.getAmount(), fee.getCurrency());
-        this.view.updateOrderTotal(total, market.getDestinationCurrency());
+
+        this.view.updateSubtotal(new MonetaryAmount(subtotal, destinationCurrency).toString());
+        this.view.updateOrderFee(fee.toString());
+        this.view.updateOrderTotal(new MonetaryAmount(total, destinationCurrency).toString());
     }
 
     @Override
     public void onOrderQuantityEntered(ExchangeMarket market, ExchangeAction.ExchangeActions action,
-                                       double amount, double price) {
+                                       String amount, String price) {
         this.onOrderPriceEntered(market, action, amount, price);
     }
 }

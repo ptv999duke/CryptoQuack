@@ -29,7 +29,7 @@ public interface IModel {
     public abstract ArrayList<ExchangeAction.ExchangeActions> getAvailableActions(
             Exchanges.Exchange exchange, ExchangeMarket market);
 
-    public abstract Order makeOrder(Exchanges.Exchange exchange, ExchangeAction.ExchangeActions action,
+    public abstract Single<Order> makeOrder(Exchanges.Exchange exchange, ExchangeAction.ExchangeActions action,
                                     Order.OrderType orderType, MonetaryAmount monetaryAmount,
                                     double price, ExchangeMarket market);
 }

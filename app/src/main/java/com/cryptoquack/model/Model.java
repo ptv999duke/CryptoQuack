@@ -45,7 +45,7 @@ public class Model implements IModel {
 
     @Override
     public MonetaryAmount calculateFee(Exchanges.Exchange exchange, ExchangeAction.ExchangeActions action, MonetaryAmount amount, ExchangeMarket market) {
-        return null;
+        return this.exchangeMap.get(exchange).calculateFee(action, amount, market);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class Model implements IModel {
     }
 
     @Override
-    public Order makeOrder(Exchanges.Exchange exchange, ExchangeAction.ExchangeActions action, Order.OrderType orderType, MonetaryAmount monetaryAmount, double price, ExchangeMarket market) {
+    public Single<Order> makeOrder(Exchanges.Exchange exchange, ExchangeAction.ExchangeActions action, Order.OrderType orderType, MonetaryAmount monetaryAmount, double price, ExchangeMarket market) {
         return null;
     }
 }

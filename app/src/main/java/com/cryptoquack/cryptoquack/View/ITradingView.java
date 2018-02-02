@@ -13,13 +13,13 @@ import java.util.ArrayList;
 
 public interface ITradingView {
 
-    public void updateCurrentPrice(String priceString);
+    public void updateCurrentPrice(String price);
 
-    public void updateSubtotal(double amount, Currencies.Currency currency);
+    public void updateSubtotal(String subtotal);
 
-    public void updateOrderFee(double amount, Currencies.Currency currency);
+    public void updateOrderFee(String fee);
 
-    public void updateOrderTotal(double amount, Currencies.Currency currency);
+    public void updateOrderTotal(String orderTotal);
 
     public void setAvailableMarkets(ArrayList<ExchangeMarket> availableMarkets);
 

@@ -19,10 +19,10 @@ public interface ITradingPresenter {
     public void onMarketChanged(ExchangeMarket market);
 
     public void onOrderPriceEntered(ExchangeMarket market, ExchangeAction.ExchangeActions action,
-                                    double amount, double price);
+                                    String quantity, String price);
 
     public void onOrderQuantityEntered(ExchangeMarket market, ExchangeAction.ExchangeActions action,
-                                       double amount, double price);
+                                       String quantity, String price);
 
     public void onNewOrder(double price, double quantity, ExchangeAction.ExchangeActions action,
                            Order.OrderType orderType, ExchangeMarket market);

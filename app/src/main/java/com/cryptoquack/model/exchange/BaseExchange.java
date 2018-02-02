@@ -38,8 +38,9 @@ public abstract class BaseExchange {
 
     public abstract Single<Double> getCurrentPriceAsync(ExchangeMarket market);
 
-    public abstract MonetaryAmount calculateFee(ExchangeAction action, MonetaryAmount amount,
-                               ExchangeMarket market);
+    public abstract MonetaryAmount calculateFee(ExchangeAction.ExchangeActions action,
+                                                MonetaryAmount amount,
+                                                ExchangeMarket market);
 
     public abstract ArrayList<ExchangeAction.ExchangeActions> getAvailableActions(
             ExchangeMarket market);

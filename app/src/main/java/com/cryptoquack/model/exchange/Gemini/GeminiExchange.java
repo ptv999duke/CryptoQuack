@@ -117,9 +117,9 @@ public class GeminiExchange extends BaseExchange {
     }
 
     @Override
-    public MonetaryAmount calculateFee(ExchangeAction action, MonetaryAmount amount,
+    public MonetaryAmount calculateFee(ExchangeAction.ExchangeActions action, MonetaryAmount amount,
                                           ExchangeMarket market) {
-        return null;
+        return new MonetaryAmount(amount.getAmount() * 0.0025, market.getDestinationCurrency());
     }
 
     @Override
