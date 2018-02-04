@@ -49,7 +49,12 @@ public class MonetaryAmount implements Comparable<MonetaryAmount> {
 
     @Override
     public String toString() {
-        return String.format("%f %s", this.amount, this.currency);
+
+        if (this.currency == Currencies.Currency.USD) {
+            return String.format("$%f", this.amount);
+        } else {
+            return String.format("$%f", this.amount, this.currency);
+        }
     }
 
     @Override

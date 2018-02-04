@@ -2,25 +2,27 @@ package com.cryptoquack.model.exchange.Gemini;
 
 import com.cryptoquack.exceptions.UnavailableActionException;
 import com.cryptoquack.exceptions.UnavailableMarketException;
+import com.cryptoquack.exceptions.UnavailableOrderTypeException;
 import com.cryptoquack.model.credentials.AccessKeyCredentials;
 import com.cryptoquack.model.currency.ExchangeMarket;
 import com.cryptoquack.model.currency.MonetaryAmount;
 import com.cryptoquack.model.exchange.BaseExchange;
 import com.cryptoquack.model.exchange.ExchangeAction;
 import com.cryptoquack.model.exchange.Exchanges;
-import com.cryptoquack.model.exchange.Gemini.DTO.GeminiNewOrderRequest;
-import com.cryptoquack.model.exchange.Gemini.DTO.GeminiOrder;
-import com.cryptoquack.model.exchange.Gemini.DTO.GeminiTicker;
+import com.cryptoquack.model.exchange.Gemini.DTOs.GeminiNewOrderRequest;
+import com.cryptoquack.model.exchange.Gemini.DTOs.GeminiOrder;
+import com.cryptoquack.model.exchange.Gemini.DTOs.GeminiTicker;
 import com.cryptoquack.model.order.Order;
 
-import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 
+import io.reactivex.Single;
+import io.reactivex.SingleSource;
+import io.reactivex.functions.Function;
 import okhttp3.OkHttpClient;
-import retrofit2.Call;
-import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
@@ -59,7 +61,8 @@ public class GeminiExchange extends BaseExchange {
         // an error which would indicate to front end that they have to enter credentials.
         httpClientBuilder.interceptors().add(new GeminiApiRequestInterceptor(this.credentials));
         apiClientBuilder.client(httpClientBuilder.build());
-        apiClientBuilder.addConverterFactory(GsonConverterFactory.create());
+        apiClientBuilder.addConverterFactory(GsonConverterFactory.create(BaseExchange.GSON));
+        apiClientBuilder.addCallAdapterFactory(RxJava2CallAdapterFactory.create());
         Retrofit r = apiClientBuilder.build();
         this.apiClient = r.create(GeminiApiClientV1.class);
     }
@@ -80,29 +83,37 @@ public class GeminiExchange extends BaseExchange {
     }
 
     @Override
-    public double getCurrentPrice(ExchangeMarket market) throws UnavailableMarketException {
+    public Single<Double> getCurrentPriceAsync(ExchangeMarket market) throws UnavailableMarketException {
         String symbol;
         try {
             symbol = GeminiHelper.convertMarketToSymbol(market);
         } catch (InvalidParameterException e){
-            throw new UnavailableMarketException(e.getMessage(), e);
+            throw new UnavailableMarketException(market, e.getMessage(), e);
         }
 
-        Call<GeminiTicker> tickerCall = this.apiClient.getPubTicker(symbol);
-        try {
-            Response<GeminiTicker> response = tickerCall.execute();
-            int statusCode = response.code();
-            GeminiTicker ticker = response.body();
-            return ticker.getLastPrice();
-        } catch (IOException e) {
-            throw new RuntimeException();
-        }
+        Single<Double> single = this.apiClient.getPubTicker(symbol)
+                .flatMap(new Function<GeminiTicker, SingleSource<Double>>() {
+                    @Override
+                    public SingleSource<Double> apply(GeminiTicker ticker) {
+                        Double price = ticker.getLastPrice();
+                        return Single.just((price));
+                    }
+                });
+        return single;
     }
 
     @Override
-    public MonetaryAmount calculateFee(ExchangeAction action, MonetaryAmount amount,
+    public Double getCurrentPrice(ExchangeMarket market) throws UnavailableMarketException {
+        Single<Double> single = this.getCurrentPriceAsync(market);
+        // TODO: Catch exception and throw custom exception based on error
+        Double price = single.blockingGet();
+        return price;
+    }
+
+    @Override
+    public MonetaryAmount calculateFee(ExchangeAction.ExchangeActions action, MonetaryAmount amount,
                                           ExchangeMarket market) {
-        return null;
+        return new MonetaryAmount(amount.getAmount() * 0.0025, market.getDestinationCurrency());
     }
 
     @Override
@@ -112,30 +123,43 @@ public class GeminiExchange extends BaseExchange {
     }
 
     @Override
-    public Order makeOrder(ExchangeAction.ExchangeActions action, Order.OrderType orderType,
-                           MonetaryAmount monetaryAmount, double price, ExchangeMarket market) {
-        if (!monetaryAmount.getCurrency().equals(market.getSourceCurrency())) {
-            throw new InvalidParameterException("Currency specified for monetary amount must match the " +
-                    "source currency of the market");
+    public Order makeOrder(Order orderRequest) {
+        Single<Order> single = this.makeOrderAsync(orderRequest);
+        // TODO: Catch exception and throw custom exception based on error
+        return single.blockingGet();
+    }
+
+    @Override
+    public Single<Order> makeOrderAsync(Order orderRequest) {
+        if (orderRequest == null) {
+            throw new NullPointerException("Order request must not be null");
         }
 
-        if (!orderType.equals(Order.OrderType.LIMIT)) {
-            throw new UnavailableActionException(action);
-        } else {
-            String actionSymbol = GeminiHelper.convertActionToActionSymbol(action);
-            String marketSymbol = GeminiHelper.convertMarketToSymbol(market);
+        if (!orderRequest.getOrderType().equals(Order.OrderType.LIMIT)) {
+            throw new UnavailableOrderTypeException(orderRequest.getOrderType());
+        }
 
-            GeminiNewOrderRequest orderRequest = new GeminiNewOrderRequest(marketSymbol,
-                    monetaryAmount.getAmount(), price, actionSymbol);
-            Call<GeminiOrder> newOrderCall = this.apiClient.newOrder(orderRequest);
-            try {
-                Response<GeminiOrder> response = newOrderCall.execute();
-                int statusCode = response.code();
-                GeminiOrder order = response.body();
-                return order.convertToOrder();
-            } catch (IOException e) {
-                throw new RuntimeException();
+        if (!this.availableActions.contains(orderRequest.getAction())) {
+            throw new UnavailableActionException(orderRequest.getAction());
+        }
+
+        if (!this.availableMarkets.contains(orderRequest.getMarket())) {
+            throw new UnavailableMarketException(orderRequest.getMarket());
+        }
+
+        String actionSymbol = GeminiHelper.convertActionToActionSymbol(orderRequest.getAction());
+        String marketSymbol = GeminiHelper.convertMarketToSymbol(orderRequest.getMarket());
+
+        GeminiNewOrderRequest geminiOrderRequest = new GeminiNewOrderRequest(marketSymbol,
+                orderRequest.getAmount().getAmount(), orderRequest.getPrice(), actionSymbol);
+        Single<GeminiOrder> newOrderCall = this.apiClient.newOrder(geminiOrderRequest);
+        Single<Order> single = newOrderCall.flatMap(new Function<GeminiOrder, SingleSource<Order>>() {
+            @Override
+            public SingleSource<Order> apply(GeminiOrder geminiOrder) {
+                return Single.just(geminiOrder.convertToOrder());
             }
-        }
+        });
+
+        return single;
     }
 }

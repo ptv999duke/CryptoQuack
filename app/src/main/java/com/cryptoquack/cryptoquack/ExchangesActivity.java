@@ -6,6 +6,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import com.cryptoquack.cryptoquack.View.TradingActivity;
 import com.cryptoquack.model.Common;
 import com.cryptoquack.model.exchange.Exchanges;
 

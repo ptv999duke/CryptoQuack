@@ -70,9 +70,9 @@ public class GeminiApiRequestInterceptor implements Interceptor {
             }
 
             byte[] fullBodyBytes = fullBodyString.getBytes(this.UTF8_INDICATOR);
-            byte[] encodedPayload = Base64.encode(fullBodyBytes, Base64.DEFAULT);
+            byte[] encodedPayload = Base64.encode(fullBodyBytes, Base64.NO_WRAP);
             String encodedPayloadString = new String(encodedPayload,
-                    GeminiApiRequestInterceptor.UTF8_INDICATOR);
+                    GeminiApiRequestInterceptor.UTF8_INDICATOR).trim();
             String signedPayload;
             try {
                 signedPayload = this.signPayload(encodedPayload);
@@ -84,12 +84,13 @@ public class GeminiApiRequestInterceptor implements Interceptor {
             builder.header("Content-Length", "0");
             builder.header(this.API_KEY_HEADER,
                     this.accessKeyCredentials.getAccessKey());
-            builder.delete(originalBody);
+            builder.post(RequestBody.create(null, new byte[]{}));
             builder.header(this.API_KEY_HEADER,
                     this.accessKeyCredentials.getAccessKey());
             builder.header(this.PAYLOAD_HEADER, encodedPayloadString);
             builder.header(this.SIGNATURE_HEADER, signedPayload);
-            return chain.proceed(builder.build());
+            Request r = builder.build();
+            return chain.proceed(r);
         } else {
             return chain.proceed(originalRequest);
         }
