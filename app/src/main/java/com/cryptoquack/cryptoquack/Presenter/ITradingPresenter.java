@@ -24,6 +24,6 @@ public interface ITradingPresenter {
     public void onOrderQuantityEntered(ExchangeMarket market, ExchangeAction.ExchangeActions action,
                                        String quantity, String price);
 
-    public void onNewOrder(double price, double quantity, ExchangeAction.ExchangeActions action,
+    public void onNewOrderClick(String priceString, String quantityString, ExchangeAction.ExchangeActions action,
                            Order.OrderType orderType, ExchangeMarket market);
 }

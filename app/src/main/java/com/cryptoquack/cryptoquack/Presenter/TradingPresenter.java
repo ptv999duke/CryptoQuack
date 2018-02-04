@@ -92,15 +92,9 @@ public class TradingPresenter implements ITradingPresenter {
 
                     @Override
                     public void onSuccess(@NonNull Double price) {
-                        String priceString = null;
                         Currencies.Currency destinationCurrency = market.getDestinationCurrency();
-                        if (destinationCurrency.equals(Currencies.Currency.USD)) {
-                            priceString = String.format("$%s", price);
-                        } else {
-                            priceString = String.format("%f %s", price, destinationCurrency.toString());
-                        }
-
-                        view.updateCurrentPrice(priceString);
+                        MonetaryAmount priceAmount = new MonetaryAmount(price, destinationCurrency);
+                        view.updateCurrentPrice(priceAmount.toString());
                     }
 
                     @Override
@@ -120,21 +114,53 @@ public class TradingPresenter implements ITradingPresenter {
     }
 
     @Override
-    public void onNewOrder(double price, double quantity, ExchangeAction.ExchangeActions action,
-                           Order.OrderType orderType, ExchangeMarket market) {
-        if (price < 0) {
-            this.view.showIncorrectPriceError();
-            return;
+    public void onNewOrderClick(String priceString, String quantityString,
+                                ExchangeAction.ExchangeActions action,
+                                Order.OrderType orderType,
+                                ExchangeMarket market) {
+        double price = 0.0;
+        double quantity = 0.0;
+        try {
+            price = Double.parseDouble(priceString);
+            if (price < 0) {
+                // TODO: Show error string.
+                this.view.showError("");
+            }
+        } catch (NumberFormatException e) {
+            this.view.showError("");
         }
 
-        if (quantity < 0) {
-            this.view.showIncorrectQuantityError();
-            return;
+        try {
+            quantity = Double.parseDouble(quantityString);
+            if (quantity < 0) {
+                // TODO: Show error string.
+                this.view.showError("");
+            }
+        } catch (NumberFormatException e) {
+            this.view.showError("");
         }
 
         MonetaryAmount amount = new MonetaryAmount(quantity, market.getSourceCurrency());
-        // TODO: make this call async and update view with order information.
-        this.model.makeOrder(this.exchange, action, orderType, amount, price, market);
+        Order orderRequest = new Order(action, market, orderType, amount, price);
+        Single<Order> single = this.model.makeOrderAsync(this.exchange, orderRequest);
+        DisposableSingleObserver<Order> subscription = new DisposableSingleObserver<Order>() {
+
+            @Override
+            public void onSuccess(@NonNull Order order) {
+                int f = 3;
+            }
+
+            @Override
+            public void onError(@NonNull Throwable e) {
+
+                int f = 3;
+                // TODO: If error occurrs too many times in a row, display a warning/error.
+            }
+        };
+
+        single.subscribeOn(bgScheduler)
+                .observeOn(uiScheduler)
+                .subscribe(subscription);
     }
 
     @Override
@@ -177,7 +203,6 @@ public class TradingPresenter implements ITradingPresenter {
                 total = subtotal - fee.getAmount();
             }
         }
-
 
         this.view.updateSubtotal(new MonetaryAmount(subtotal, destinationCurrency).toString());
         this.view.updateOrderFee(fee.toString());

@@ -25,7 +25,5 @@ public interface ITradingView {
 
     public void setAvailableActions(ArrayList<ExchangeAction.ExchangeActions> availableActions);
 
-    public void showIncorrectPriceError();
-
-    public void showIncorrectQuantityError();
+    public void showError(String message);
 }

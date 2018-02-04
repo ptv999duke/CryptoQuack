@@ -1,4 +1,4 @@
-package com.cryptoquack.model.exchange.Gemini.DTO;
+package com.cryptoquack.model.exchange.Gemini.DTOs;
 
 import com.cryptoquack.model.order.Order;
 

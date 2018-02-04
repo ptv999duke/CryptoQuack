@@ -44,17 +44,26 @@ public class Model implements IModel {
     }
 
     @Override
-    public MonetaryAmount calculateFee(Exchanges.Exchange exchange, ExchangeAction.ExchangeActions action, MonetaryAmount amount, ExchangeMarket market) {
+    public MonetaryAmount calculateFee(Exchanges.Exchange exchange,
+                                       ExchangeAction.ExchangeActions action,
+                                       MonetaryAmount amount,
+                                       ExchangeMarket market) {
         return this.exchangeMap.get(exchange).calculateFee(action, amount, market);
     }
 
     @Override
-    public ArrayList<ExchangeAction.ExchangeActions> getAvailableActions(Exchanges.Exchange exchange, ExchangeMarket market) {
+    public ArrayList<ExchangeAction.ExchangeActions> getAvailableActions(Exchanges.Exchange exchange,
+                                                                         ExchangeMarket market) {
         return this.exchangeMap.get(exchange).getAvailableActions(market);
     }
 
     @Override
-    public Single<Order> makeOrder(Exchanges.Exchange exchange, ExchangeAction.ExchangeActions action, Order.OrderType orderType, MonetaryAmount monetaryAmount, double price, ExchangeMarket market) {
-        return null;
+    public Single<Order> makeOrderAsync(Exchanges.Exchange exchange, Order orderRequest) {
+        return this.exchangeMap.get(exchange).makeOrderAsync(orderRequest);
+    }
+
+    @Override
+    public Order makeOrder(Exchanges.Exchange exchange, Order orderRequest) {
+        return this.exchangeMap.get(exchange).makeOrder(orderRequest);
     }
 }

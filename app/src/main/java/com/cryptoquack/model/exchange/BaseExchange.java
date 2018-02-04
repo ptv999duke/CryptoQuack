@@ -6,6 +6,8 @@ import com.cryptoquack.model.credentials.ICredentials;
 import com.cryptoquack.model.currency.ExchangeMarket;
 import com.cryptoquack.model.currency.MonetaryAmount;
 import com.cryptoquack.model.order.Order;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 
@@ -16,6 +18,9 @@ import io.reactivex.Single;
  */
 
 public abstract class BaseExchange {
+
+    public static final Gson GSON = new GsonBuilder().excludeFieldsWithoutExposeAnnotation()
+            .create();
 
     protected Exchanges.Exchange exchangeType;
     protected AccessKeyCredentials credentials;
@@ -45,7 +50,7 @@ public abstract class BaseExchange {
     public abstract ArrayList<ExchangeAction.ExchangeActions> getAvailableActions(
             ExchangeMarket market);
 
-    public abstract Order makeOrder(ExchangeAction.ExchangeActions action, Order.OrderType orderType,
-                                    MonetaryAmount monetaryAmount, double price, ExchangeMarket market);
+    public abstract Order makeOrder(Order orderRequest);
 
+    public abstract Single<Order> makeOrderAsync(Order orderRequest);
 }

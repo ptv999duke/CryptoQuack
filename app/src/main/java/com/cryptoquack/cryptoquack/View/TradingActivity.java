@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TableRow;
@@ -23,6 +24,7 @@ import com.cryptoquack.model.currency.ExchangeMarket;
 import com.cryptoquack.model.exchange.BaseExchange;
 import com.cryptoquack.model.exchange.ExchangeAction;
 import com.cryptoquack.model.exchange.Exchanges;
+import com.cryptoquack.model.order.Order;
 
 import java.util.ArrayList;
 
@@ -51,7 +53,7 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
     private TextView feeTextView;
     private TableRow totalRow;
     private TextView totalTextView;
-
+    private Button newOrderButton;
 
     private ITradingPresenter presenter;
     private IModel model;
@@ -90,6 +92,7 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
         this.feeTextView = (TextView) findViewById(R.id.fee_text_view);
         this.totalRow = (TableRow) findViewById(R.id.total_price_row);
         this.totalTextView = (TextView) findViewById(R.id.total_price_text_view);
+        this.newOrderButton = (Button) findViewById(R.id.new_order_button);
 
         this.orderPriceEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -122,6 +125,17 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
         });
 
         this.setTitle(this.getExchangeName(this.exchangeType));
+        this.newOrderButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.onNewOrderClick(orderPriceEditText.getText().toString(),
+                        quantityEditText.getText().toString(),
+                        (ExchangeAction.ExchangeActions) actionChoiceSpinner.getSelectedItem(),
+                        Order.OrderType.LIMIT,
+                        (ExchangeMarket) marketChoiceSpinner.getSelectedItem());
+            }
+        });
+
         this.presenter.onCreate(this, this.model, new AndroidResourceManager(this.getResources()), this.exchangeType);
     }
 
@@ -167,12 +181,7 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
     }
 
     @Override
-    public void showIncorrectPriceError() {
-
-    }
-
-    @Override
-    public void showIncorrectQuantityError() {
+    public void showError(String message) {
 
     }
 

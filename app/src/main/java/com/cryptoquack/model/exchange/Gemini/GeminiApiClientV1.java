@@ -1,11 +1,10 @@
 package com.cryptoquack.model.exchange.Gemini;
 
-import com.cryptoquack.model.exchange.Gemini.DTO.GeminiNewOrderRequest;
-import com.cryptoquack.model.exchange.Gemini.DTO.GeminiOrder;
-import com.cryptoquack.model.exchange.Gemini.DTO.GeminiTicker;
+import com.cryptoquack.model.exchange.Gemini.DTOs.GeminiNewOrderRequest;
+import com.cryptoquack.model.exchange.Gemini.DTOs.GeminiOrder;
+import com.cryptoquack.model.exchange.Gemini.DTOs.GeminiTicker;
 
 import io.reactivex.Single;
-import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
