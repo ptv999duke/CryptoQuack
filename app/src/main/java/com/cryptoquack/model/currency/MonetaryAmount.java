@@ -53,7 +53,7 @@ public class MonetaryAmount implements Comparable<MonetaryAmount> {
         if (this.currency == Currencies.Currency.USD) {
             return String.format("$%f", this.amount);
         } else {
-            return String.format("$%f", this.amount, this.currency);
+            return String.format("%f %s", this.amount, this.currency);
         }
     }
 

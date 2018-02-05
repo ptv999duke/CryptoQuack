@@ -151,7 +151,7 @@ public class GeminiExchange extends BaseExchange {
         String marketSymbol = GeminiHelper.convertMarketToSymbol(orderRequest.getMarket());
 
         GeminiNewOrderRequest geminiOrderRequest = new GeminiNewOrderRequest(marketSymbol,
-                orderRequest.getAmount().getAmount(), orderRequest.getPrice(), actionSymbol);
+                orderRequest.getTotalAmount().getAmount(), orderRequest.getPrice(), actionSymbol);
         Single<GeminiOrder> newOrderCall = this.apiClient.newOrder(geminiOrderRequest);
         Single<Order> single = newOrderCall.flatMap(new Function<GeminiOrder, SingleSource<Order>>() {
             @Override

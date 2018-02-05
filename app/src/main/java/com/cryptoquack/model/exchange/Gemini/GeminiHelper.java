@@ -81,4 +81,19 @@ public class GeminiHelper {
 
         return symbol;
     }
+
+    public static ExchangeAction.ExchangeActions convertActionSymbolToAction(String actionSymbol) {
+        if (actionSymbol == null) {
+            throw new NullPointerException();
+        }
+
+        ExchangeAction.ExchangeActions action = GeminiHelper.actionSymbolActionMap.get(actionSymbol);
+        if (action == null) {
+            throw new InvalidParameterException(String.format("Unsupported Gemini action symbol " +
+                            "type: {0}"
+                    , actionSymbol));
+        }
+
+        return action;
+    }
 }

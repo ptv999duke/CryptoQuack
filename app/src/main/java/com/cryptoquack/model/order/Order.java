@@ -10,6 +10,13 @@ import com.cryptoquack.model.exchange.ExchangeAction;
 
 public class Order {
 
+    public static enum OrderStatus {
+        NEW,
+        PARTIALLY_FILLED,
+        FILLED,
+        CANCELLED,
+    }
+
     public static enum OrderType {
         LIMIT,
         STOPLIMIT
@@ -19,13 +26,16 @@ public class Order {
     private OrderType orderType;
     private ExchangeAction.ExchangeActions action;
     private ExchangeMarket market;
-    private MonetaryAmount amount;
+    private MonetaryAmount totalAmount;
     private double price;
+    private MonetaryAmount amountFulfilled;
+    private MonetaryAmount amountRemaining;
+    private OrderStatus orderStatus;
 
     private MonetaryAmount fee;
 
     public Order(Order order) {
-        this(order.getAction(), order.getMarket(), order.getOrderType(), order.amount,
+        this(order.getAction(), order.getMarket(), order.getOrderType(), order.totalAmount,
                 order.getPrice());
         this.orderId = order.getOrderId();
     }
@@ -37,9 +47,9 @@ public class Order {
     }
 
     public Order(ExchangeAction.ExchangeActions action, ExchangeMarket market, OrderType orderType,
-                 MonetaryAmount amount, double price) {
+                 MonetaryAmount totalAmount, double price) {
         this.setAction(action);
-        this.setOrderMarketAmount(market, amount);
+        this.setOrderMarketAmount(market, totalAmount);
         this.setOrderType(orderType);
         this.setPrice(price);
     }
@@ -88,22 +98,39 @@ public class Order {
         return this.market;
     }
 
-    public MonetaryAmount getAmount() {
-        return amount;
+    public MonetaryAmount getTotalAmount() {
+        return this.totalAmount;
     }
 
     public void setOrderMarketAmount(ExchangeMarket market, MonetaryAmount amount) {
         if (market == null || amount == null) {
-            throw new NullPointerException("Null is not a valid value for market and/or amount.");
+            throw new NullPointerException("Null is not a valid value for market and/or totalAmount.");
         }
 
         if (!market.getSourceCurrency().equals(amount.getCurrency())) {
-            throw new IllegalArgumentException("Market's source currency and amount's currency must" +
+            throw new IllegalArgumentException("Market's source currency and totalAmount's currency must" +
                     "be equivalent");
         }
 
         this.market = market;
-        this.amount = amount;
+        this.totalAmount = amount;
     }
 
+    public OrderStatus getOrderStatus() { return this.orderStatus; }
+
+    public void setOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
+    public MonetaryAmount getAmountFulfilled() { return this.amountFulfilled; }
+
+    public void setAmountFulfilled(MonetaryAmount amount) {
+        this.amountFulfilled = amount;
+    }
+
+    public MonetaryAmount getAmountRemaining() { return this.amountRemaining; }
+
+    public void setAmountRemaining(MonetaryAmount amount) {
+        this.amountRemaining = amount;
+    }
 }
