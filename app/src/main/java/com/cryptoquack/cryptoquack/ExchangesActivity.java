@@ -24,7 +24,6 @@ public class ExchangesActivity extends CryptoQuackActivity {
 
         this.setTitle(getString(R.string.exchanges_header));
         this.recyclerView = (RecyclerView) findViewById(R.id.exchange_list_recycler_view);
-        OrderItemView o = (OrderItemView) findViewById(R.id.view1);
 
         this.recyclerView.setHasFixedSize(true);
         this.layoutManager = new LinearLayoutManager(this);
@@ -49,6 +48,4 @@ public class ExchangesActivity extends CryptoQuackActivity {
                 DividerItemDecoration.VERTICAL);
         this.recyclerView.addItemDecoration(deco);
     }
-
-
 }

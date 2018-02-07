@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -58,6 +59,8 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
     private ITradingPresenter presenter;
     private IModel model;
 
+    private LinearLayout ordersLayout;
+
     public TradingActivity() {
         super();
         IModel model = new Model();
@@ -93,6 +96,7 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
         this.totalRow = (TableRow) findViewById(R.id.total_price_row);
         this.totalTextView = (TextView) findViewById(R.id.total_price_text_view);
         this.newOrderButton = (Button) findViewById(R.id.new_order_button);
+        this.ordersLayout = (LinearLayout)findViewById(R.id.orders_layout);
 
         this.orderPriceEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -203,5 +207,13 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
         public void onNothingSelected(AdapterView<?> parent) {
             this.tradingActivity.presenter.onMarketChanged(null);
         }
+    }
+
+    @Override
+    public void addOrderItem(Order order) {
+        OrderItemView item = new OrderItemView(this);
+        item.init();
+        item.setOrder(order);
+        this.ordersLayout.addView(item);
     }
 }

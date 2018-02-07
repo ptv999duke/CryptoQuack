@@ -7,6 +7,7 @@ import com.cryptoquack.model.exchange.Gemini.GeminiHelper;
 import com.cryptoquack.model.order.Order;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import java.util.Date;
 
 /**
  * Created by Duke on 1/27/2018.
@@ -54,6 +55,10 @@ public class GeminiOrder {
     @SerializedName("is_cancelled")
     private boolean isCancelled;
 
+    @Expose
+    @SerializedName("timestampms")
+    private long timestampmillis;
+
     public Order convertToOrder() {
         Order order = new Order(this.orderId);
         ExchangeMarket market = GeminiHelper.convertSymbolToMarket(this.symbol);
@@ -86,6 +91,8 @@ public class GeminiOrder {
         }
 
         order.setOrderType(Order.OrderType.LIMIT);
+        Date orderDate = new Date(this.timestampmillis);
+        order.setOrderTime(orderDate);
         return order;
     }
 }

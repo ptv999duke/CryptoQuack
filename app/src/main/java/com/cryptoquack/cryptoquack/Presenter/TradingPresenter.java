@@ -2,6 +2,7 @@ package com.cryptoquack.cryptoquack.Presenter;
 
 import com.cryptoquack.cryptoquack.IResourceManager;
 import com.cryptoquack.cryptoquack.View.ITradingView;
+import com.cryptoquack.cryptoquack.View.OrderItemView;
 import com.cryptoquack.model.IModel;
 import com.cryptoquack.model.currency.Currencies;
 import com.cryptoquack.model.currency.ExchangeMarket;
@@ -147,7 +148,7 @@ public class TradingPresenter implements ITradingPresenter {
 
             @Override
             public void onSuccess(@NonNull Order order) {
-                int f = 3;
+                view.addOrderItem(order);
             }
 
             @Override
