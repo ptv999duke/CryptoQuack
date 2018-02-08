@@ -42,21 +42,19 @@ public class OrderItemPresenter implements IOrderItemPresenter {
         Date orderDate = this.order.getOrderTime();
         this.view.setOrderTime(orderDate.toString(), true);
         this.view.setOrderType(this.order.getOrderType().toString(), true);
-        this.view.setOrderAction(this.order.getAction().toString(), true);
-        String amountPriceString = String.format("%f@%f", this.order.getTotalAmount().getAmount(),
+        String actionString = this.order.getAction().toString();
+        String orderSummaryString = String.format("%s %f@%f", actionString,
+                this.order.getTotalAmount().getAmount(),
                 order.getPrice());
-        this.view.setOrderAmountPrice(amountPriceString, true);
+        this.view.setOrderSummaryTextview(orderSummaryString, true);
         Order.OrderStatus orderStatus = order.getOrderStatus();
         if (orderStatus == Order.OrderStatus.CANCELLED) {
             // TODO: Put all the hard coded strings in resource manager
-            this.view.setOrderProgress("CANCELLED", true);
-            this.view.setAdditionalActionButton("Cancel", true, false);
+            this.view.setOrderProgress(this.rm.getOrderCancelledStatusString(), true);
         } else if (orderStatus == Order.OrderStatus.FILLED) {
-            this.view.setOrderProgress("COMPLETED", true);
-            this.view.setAdditionalActionButton("Cancel", true, false);
+            this.view.setOrderProgress(this.rm.getOrderCompletedStatusString(), true);
         } else {
-            this.view.setOrderProgress("IN PROGRESS", true);
-            this.view.setAdditionalActionButton("Cancel", true, true);
+            this.view.setOrderProgress(this.rm.getOrderInProgressStatusString(), true);
         }
     }
 

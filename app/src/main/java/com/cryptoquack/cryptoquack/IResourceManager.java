@@ -6,4 +6,12 @@ package com.cryptoquack.cryptoquack;
 public interface IResourceManager {
 
     public String getPriceLoadingString();
+
+    public String getOrderCancelledStatusString();
+
+    public String getOrderCompletedStatusString();
+
+    public String getOrderInProgressStatusString();
+
+    public String getOrderCancelButtonString();
 }

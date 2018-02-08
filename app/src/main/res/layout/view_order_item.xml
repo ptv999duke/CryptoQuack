@@ -1,98 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:weightSum="6"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="5"
     android:orientation="horizontal">
 
     <TextView
         android:id="@+id/order_time_text_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginLeft="16dp"
+        android:layout_height="match_parent"
         android:layout_weight="1"
         android:visibility="visible"
         tools:text="@string/order_item_order_time_default_text" />
 
     <TextView
-        android:id="@+id/order_action_text_view"
+        android:id="@+id/order_summary_text_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginLeft="16dp"
-        android:layout_toRightOf="@+id/order_time_text_view"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
         android:visibility="visible"
-        tools:text="@string/order_item_order_action_default_text" />
+        tools:text="@string/order_item_order_amount_price_default_text" />
 
     <TextView
         android:id="@+id/order_type_text_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginLeft="16dp"
-        android:layout_toRightOf="@+id/order_action_text_view"
+        android:layout_height="match_parent"
         android:layout_weight="1"
         android:visibility="visible"
         tools:text="@string/order_item_order_type_default_text" />
 
     <TextView
-        android:id="@+id/order_amount_price_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginLeft="16dp"
-        android:layout_toRightOf="@+id/order_type_text_view"
-        android:layout_weight="1"
-        android:visibility="visible"
-        tools:text="@string/order_item_order_amount_price_default_text" />
-
-    <TextView
         android:id="@+id/order_progress_text_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginLeft="16dp"
+        android:layout_height="match_parent"
         android:layout_toRightOf="@+id/order_amount_price_text_view"
         android:layout_weight="1"
         android:visibility="visible"
         tools:text="@string/order_item_order_progress_default_text" />
-
-    <Button
-        android:id="@+id/order_additional_action_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginLeft="16dp"
-        android:layout_toRightOf="@+id/order_progress_text_view"
-        android:layout_weight="1"
-        android:visibility="gone" />
-
-    <!--<TextView-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_weight="1"-->
-    <!--android:layout_centerVertical="true"-->
-    <!--android:layout_marginLeft="16dp"-->
-    <!--android:textSize="18sp"-->
-    <!--/>-->
-
-    <!--<View-->
-    <!--android:layout_width="26dp"-->
-    <!--android:layout_height="26dp"-->
-    <!--android:layout_centerVertical="true"-->
-    <!--android:layout_marginLeft="16dp"-->
-    <!--android:layout_marginRight="16dp"-->
-    <!--/>-->
-
-    <!--<ImageView-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_marginRight="16dp"-->
-    <!--android:layout_centerVertical="true"-->
-    <!--android:visibility="gone"-->
-    <!--/>-->
 
 </merge>
