@@ -2,6 +2,7 @@ package com.cryptoquack.cryptoquack.View;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -24,7 +25,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
  * Created by Duke on 2/5/2018.
  */
 
-public class OrderItemView extends LinearLayout implements IOrderItemView {
+public class OrderItemView extends ConstraintLayout implements IOrderItemView {
 
     private TextView orderTimeTextView;
     private TextView orderTypeTextView;
@@ -51,8 +52,8 @@ public class OrderItemView extends LinearLayout implements IOrderItemView {
         this.orderSummaryTextview = (TextView) this.findViewById(R.id.order_summary_text_view);
         this.orderTypeTextView = (TextView) this.findViewById(R.id.order_type_text_view);
         this.orderProgressTextView = (TextView) this.findViewById(R.id.order_progress_text_view);
-        this.setOrientation(this.HORIZONTAL);
-        this.setWeightSum(4);
+        // this.setOrientation(this.HORIZONTAL);
+        // this.setWeightSum(4);
     }
 
     public void setOrder(Order order) {

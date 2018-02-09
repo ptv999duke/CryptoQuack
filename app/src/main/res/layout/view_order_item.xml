@@ -1,42 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:weightSum="5"
-    android:orientation="horizontal">
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/order_time_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:visibility="visible"
-        tools:text="@string/order_item_order_time_default_text" />
-
-    <TextView
-        android:id="@+id/order_summary_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_weight="2"
-        android:visibility="visible"
-        tools:text="@string/order_item_order_amount_price_default_text" />
+        app:layout_constraintHorizontal_bias="0"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintWidth_default="wrap"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/order_type_text_view"
+        tools:text="@string/order_item_order_time_default_text"/>
 
     <TextView
         android:id="@+id/order_type_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:visibility="visible"
+        app:layout_constraintHorizontal_bias="0"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintWidth_default="wrap"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/order_time_text_view"
+        app:layout_constraintRight_toLeftOf="@+id/order_summary_text_view"
+        app:layout_constraintBottom_toBottomOf="parent"
         tools:text="@string/order_item_order_type_default_text" />
 
     <TextView
-        android:id="@+id/order_progress_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_toRightOf="@+id/order_amount_price_text_view"
-        android:layout_weight="1"
+        android:id="@+id/order_summary_text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:visibility="visible"
+        app:layout_constraintHorizontal_bias="0"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintWidth_default="wrap"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/order_type_text_view"
+        app:layout_constraintRight_toLeftOf="@+id/order_progress_text_view"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:text="@string/order_item_order_amount_price_default_text" />
+
+    <TextView
+        android:id="@+id/order_progress_text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:layout_constraintHorizontal_bias="0"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="16dp"
+        app:layout_constraintWidth_default="wrap"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/order_summary_text_view"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         tools:text="@string/order_item_order_progress_default_text" />
 
 </merge>

@@ -4,6 +4,7 @@ import com.cryptoquack.cryptoquack.IResourceManager;
 import com.cryptoquack.cryptoquack.View.IOrderItemView;
 import com.cryptoquack.cryptoquack.View.ITradingView;
 import com.cryptoquack.model.IModel;
+import com.cryptoquack.model.currency.Currencies;
 import com.cryptoquack.model.order.Order;
 
 import java.util.Date;
@@ -40,21 +41,26 @@ public class OrderItemPresenter implements IOrderItemPresenter {
     public void setOrder(Order order) {
         this.order = order;
         Date orderDate = this.order.getOrderTime();
-        this.view.setOrderTime(orderDate.toString(), true);
+        String dateString = this.rm.getOrderDateString(orderDate);
+        this.view.setOrderTime(dateString, true);
         this.view.setOrderType(this.order.getOrderType().toString(), true);
         String actionString = this.order.getAction().toString();
-        String orderSummaryString = String.format("%s %f@%f", actionString,
-                this.order.getTotalAmount().getAmount(),
-                order.getPrice());
+        Currencies.Currency priceCurrency = this.order.getMarket().getDestinationCurrency();
+        String orderSummaryString = this.rm.getOrderSummaryString(this.order.getAction(),
+                this.order.getTotalAmount(),
+                this.order.getPrice(),
+                priceCurrency);
         this.view.setOrderSummaryTextview(orderSummaryString, true);
         Order.OrderStatus orderStatus = order.getOrderStatus();
         if (orderStatus == Order.OrderStatus.CANCELLED) {
-            // TODO: Put all the hard coded strings in resource manager
             this.view.setOrderProgress(this.rm.getOrderCancelledStatusString(), true);
         } else if (orderStatus == Order.OrderStatus.FILLED) {
             this.view.setOrderProgress(this.rm.getOrderCompletedStatusString(), true);
         } else {
-            this.view.setOrderProgress(this.rm.getOrderInProgressStatusString(), true);
+            int percentFulfilled = (int)(100*this.order.getAmountFulfilled().getAmount() /
+                    this.order.getTotalAmount().getAmount());
+            String progressText = this.rm.getOrderFulfilledPercentageString(percentFulfilled);
+            this.view.setOrderProgress(progressText, true);
         }
     }
 

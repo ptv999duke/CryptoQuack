@@ -18,13 +18,14 @@
     <string name="subtotal_indicator_label">Subtotal:</string>
     <string name="fee_indicator_label">Fee:</string>
     <string name="total_price_label">Total:</string>
-    <string name="order_item_order_time_default_text">Order Time</string>
-    <string name="order_item_order_type_default_text">Order Type</string>
+    <string name="order_item_order_time_default_text">2018-02-08 21:51:09</string>
+    <string name="order_item_order_type_default_text">LIMIT</string>
     <string name="order_item_order_action_default_text">Order Action</string>
-    <string name="order_item_order_amount_price_default_text">1@$1.00</string>
-    <string name="order_item_order_progress_default_text">0%</string>
+    <string name="order_item_order_amount_price_default_text">BUY 1 ETH@$1000.00</string>
+    <string name="order_item_order_progress_default_text">0% Filled</string>
     <string name="order_completed_status_string">COMPLETED</string>
     <string name="order_cancelled_status_string">CANCELLED</string>
     <string name="order_in_progress_status_string">IN PROGRESS</string>
     <string name="order_cancel_button_string">Cancel</string>
+    <string name="order_filled_progress_string_format">%d%% Filled</string>
 </resources>
