@@ -71,10 +71,11 @@ public class SettingsActivity extends CryptoQuackActivity implements ISettingsAc
             @Override
             public void onExchangeClick(Exchanges.Exchange[] exchanges, int position) {
                 Exchanges.Exchange exchangeType = exchanges[position];
-                Bundle tradingActivityBundle = new Bundle();
-                tradingActivityBundle.putString(TradingActivity.EXTRA_TRADING_ACTIVITY_EXCHANGE_TYPE, exchangeType.name());
-                Intent intent = new Intent(SettingsActivity.this, TradingActivity.class);
-                intent.putExtras(tradingActivityBundle);
+                Bundle credentialsActivityBundle = new Bundle();
+                credentialsActivityBundle.putString(CredentialsActivity.EXTRA_CREDENTIALS_ACTIVITY_EXCHANGE_TYPE,
+                        exchangeType.name());
+                Intent intent = new Intent(SettingsActivity.this, CredentialsActivity.class);
+                intent.putExtras(credentialsActivityBundle);
                 startActivity(intent);
             }
         });

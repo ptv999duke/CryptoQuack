@@ -20,6 +20,7 @@
         <activity android:name=".View.TradingActivity" />
         <activity android:name=".ExchangesActivity"></activity>
         <activity android:name=".View.SettingsActivity"></activity>
+        <activity android:name=".View.CredentialsActivity"></activity>
     </application>
 
 </manifest>
