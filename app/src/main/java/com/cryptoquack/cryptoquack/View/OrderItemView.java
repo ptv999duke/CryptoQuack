@@ -52,8 +52,6 @@ public class OrderItemView extends ConstraintLayout implements IOrderItemView {
         this.orderSummaryTextview = (TextView) this.findViewById(R.id.order_summary_text_view);
         this.orderTypeTextView = (TextView) this.findViewById(R.id.order_type_text_view);
         this.orderProgressTextView = (TextView) this.findViewById(R.id.order_progress_text_view);
-        // this.setOrientation(this.HORIZONTAL);
-        // this.setWeightSum(4);
     }
 
     public void setOrder(Order order) {

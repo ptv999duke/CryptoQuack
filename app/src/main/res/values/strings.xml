@@ -28,4 +28,9 @@
     <string name="order_in_progress_status_string">IN PROGRESS</string>
     <string name="order_cancel_button_string">Cancel</string>
     <string name="order_filled_progress_string_format">%d%% Filled</string>
+    <string-array name="landing_activity_selection_list">
+        <item>Exchanges</item>
+        <item>Settings</item>
+    </string-array>
+    <string name="activity_settings_title">Settings</string>
 </resources>
