@@ -27,7 +27,6 @@ public class CredentialsPresenter implements ICredentialsPresenter {
         this.model = model;
         this.rm = rm;
         this.exchange = exchange;
-        this.model
     }
 
     @Override

@@ -47,7 +47,6 @@ public class AndroidCredentialsStore implements ICredentialsStore {
                         .build();
                 kpg.initialize(spec);
                 KeyPair keyPair = kpg.generateKeyPair();
-                keyPair.
             } else {
                 this.keyStore.getEntry(this.KEY_ALIAS, null);
             }
