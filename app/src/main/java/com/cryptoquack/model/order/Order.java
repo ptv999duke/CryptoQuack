@@ -4,6 +4,8 @@ import com.cryptoquack.model.currency.ExchangeMarket;
 import com.cryptoquack.model.currency.MonetaryAmount;
 import com.cryptoquack.model.exchange.ExchangeAction;
 
+import java.util.Date;
+
 /**
  * Created by Duke on 1/24/2018.
  */
@@ -31,7 +33,7 @@ public class Order {
     private MonetaryAmount amountFulfilled;
     private MonetaryAmount amountRemaining;
     private OrderStatus orderStatus;
-
+    private Date orderTime;
     private MonetaryAmount fee;
 
     public Order(Order order) {
@@ -132,5 +134,13 @@ public class Order {
 
     public void setAmountRemaining(MonetaryAmount amount) {
         this.amountRemaining = amount;
+    }
+
+    public Date getOrderTime() {
+        return this.orderTime;
+    }
+
+    public void setOrderTime(Date orderTime) {
+        this.orderTime = orderTime;
     }
 }

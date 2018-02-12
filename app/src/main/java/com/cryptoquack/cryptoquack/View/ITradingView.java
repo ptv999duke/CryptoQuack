@@ -4,6 +4,7 @@ import com.cryptoquack.model.IModel;
 import com.cryptoquack.model.currency.Currencies;
 import com.cryptoquack.model.currency.ExchangeMarket;
 import com.cryptoquack.model.exchange.ExchangeAction;
+import com.cryptoquack.model.order.Order;
 
 import java.util.ArrayList;
 
@@ -26,4 +27,6 @@ public interface ITradingView {
     public void setAvailableActions(ArrayList<ExchangeAction.ExchangeActions> availableActions);
 
     public void showError(String message);
+
+    public void addOrderItem(Order order);
 }

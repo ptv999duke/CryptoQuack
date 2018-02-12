@@ -6,6 +6,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import com.cryptoquack.cryptoquack.View.OrderItemView;
 import com.cryptoquack.cryptoquack.View.TradingActivity;
 import com.cryptoquack.model.Common;
 import com.cryptoquack.model.exchange.Exchanges;
@@ -23,6 +24,7 @@ public class ExchangesActivity extends CryptoQuackActivity {
 
         this.setTitle(getString(R.string.exchanges_header));
         this.recyclerView = (RecyclerView) findViewById(R.id.exchange_list_recycler_view);
+
         this.recyclerView.setHasFixedSize(true);
         this.layoutManager = new LinearLayoutManager(this);
         this.recyclerView.setLayoutManager(this.layoutManager);
@@ -46,6 +48,4 @@ public class ExchangesActivity extends CryptoQuackActivity {
                 DividerItemDecoration.VERTICAL);
         this.recyclerView.addItemDecoration(deco);
     }
-
-
 }
