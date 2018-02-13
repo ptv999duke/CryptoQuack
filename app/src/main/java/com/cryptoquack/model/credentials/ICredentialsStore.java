@@ -10,4 +10,7 @@ public interface ICredentialsStore {
 
     public AccessKeyCredentials getAccessKeyCredentials(Exchanges.Exchange exchange);
 
+    public void saveAccessKeyCredentials(Exchanges.Exchange exchange,
+                                         String accessKey,
+                                         String secretKey);
 }

@@ -37,7 +37,8 @@ public interface IModel {
 
     public AccessKeyCredentials loadCredentials(Exchanges.Exchange exchange);
 
-    public void saveCredentials(Exchanges.Exchange exchange,
-                                AccessKeyCredentials credentials,
-                                boolean temporary);
+    public AccessKeyCredentials saveCredentials(Exchanges.Exchange exchange,
+                                                String accessKey,
+                                                String secretKey,
+                                                boolean temporary);
 }

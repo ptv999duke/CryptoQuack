@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.cryptoquack.cryptoquack.AndroidCredentialsStore;
 import com.cryptoquack.cryptoquack.AndroidResourceManager;
 import com.cryptoquack.cryptoquack.CryptoQuackActivity;
 import com.cryptoquack.cryptoquack.ExchangesActivity;
@@ -35,7 +36,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class SettingsActivity extends CryptoQuackActivity implements ISettingsActivity {
 
-    private final IModel model;
+    private IModel model;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private ISettingsPresenter presenter;
@@ -43,14 +44,16 @@ public class SettingsActivity extends CryptoQuackActivity implements ISettingsAc
 
     public SettingsActivity() {
         super();
-        IModel model = new Model();
-        this.model = model;
         this.presenter = new SettingsPresenter();
     }
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
+        IModel model = new Model(new AndroidCredentialsStore(this));
+        this.model = model;
+        this.presenter.onCreate(this, this.model, new AndroidResourceManager(this.getResources()));
 
         this.setTitle(this.getString(R.string.activity_settings_title));
         this.recyclerView = (RecyclerView) findViewById(R.id.settings_list_recycler_view);

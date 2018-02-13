@@ -68,12 +68,26 @@ public class Model implements IModel {
 
     @Override
     public AccessKeyCredentials loadCredentials(Exchanges.Exchange exchange) {
-        return null;
+        AccessKeyCredentials credentials = this.credentialsStore.getAccessKeyCredentials(exchange);
+        if (credentials != null) {
+            this.exchangeMap.get(exchange).setCredentials(credentials);
+        }
+
+        return credentials;
     }
 
     @Override
-    public void saveCredentials(Exchanges.Exchange exchange, AccessKeyCredentials credentials, boolean temporary) {
+    public AccessKeyCredentials saveCredentials(Exchanges.Exchange exchange,
+                                String accessKey,
+                                String secretKey,
+                                boolean temporary) {
+        if (!temporary) {
+            this.credentialsStore.saveAccessKeyCredentials(exchange, accessKey, secretKey);
+        }
 
+        AccessKeyCredentials credentials = new AccessKeyCredentials(accessKey, secretKey);
+        this.exchangeMap.get(exchange).setCredentials(credentials);
+        return credentials;
     }
 
     @Override

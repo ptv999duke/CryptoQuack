@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.cryptoquack.cryptoquack.AndroidCredentialsStore;
 import com.cryptoquack.cryptoquack.AndroidResourceManager;
 import com.cryptoquack.cryptoquack.CryptoQuackActivity;
 import com.cryptoquack.cryptoquack.IResourceManager;
@@ -33,7 +34,6 @@ public class CredentialsActivity extends CryptoQuackActivity implements ICredent
 
     public CredentialsActivity() {
         this.presenter = new CredentialsPresenter();
-        this.model = new Model();
     }
 
     @Override
@@ -50,6 +50,9 @@ public class CredentialsActivity extends CryptoQuackActivity implements ICredent
 
         String exchangeTypeString = extras.getString(this.EXTRA_CREDENTIALS_ACTIVITY_EXCHANGE_TYPE);
         final Exchanges.Exchange exchangeType = Exchanges.Exchange.valueOf(exchangeTypeString);
+        this.model = new Model(new AndroidCredentialsStore(this));
+        this.presenter.onCreate(this, this.model, new AndroidResourceManager(this.getResources()),
+                exchangeType);
         this.presenter.onCreate(this,
                 this.model,
                 new AndroidResourceManager(this.getResources()),

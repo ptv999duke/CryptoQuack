@@ -11,6 +11,7 @@ import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.cryptoquack.cryptoquack.AndroidCredentialsStore;
 import com.cryptoquack.cryptoquack.CryptoQuackActivity;
 import com.cryptoquack.cryptoquack.ExchangeActionAdapter;
 import com.cryptoquack.cryptoquack.ExchangeMarketAdapter;
@@ -63,8 +64,6 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
 
     public TradingActivity() {
         super();
-        IModel model = new Model();
-        this.model = model;
         this.presenter = new TradingPresenter(AndroidSchedulers.mainThread());
     }
 
@@ -140,6 +139,8 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
             }
         });
 
+        IModel model = new Model(new AndroidCredentialsStore(this));
+        this.model = model;
         this.presenter.onCreate(this, this.model, new AndroidResourceManager(this.getResources()), this.exchangeType);
     }
 
