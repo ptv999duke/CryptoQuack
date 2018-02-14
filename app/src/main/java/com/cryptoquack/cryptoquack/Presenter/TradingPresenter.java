@@ -3,6 +3,7 @@ package com.cryptoquack.cryptoquack.Presenter;
 import com.cryptoquack.cryptoquack.IResourceManager;
 import com.cryptoquack.cryptoquack.View.ITradingView;
 import com.cryptoquack.cryptoquack.View.OrderItemView;
+import com.cryptoquack.exceptions.CredentialsNotSetException;
 import com.cryptoquack.model.IModel;
 import com.cryptoquack.model.currency.Currencies;
 import com.cryptoquack.model.currency.ExchangeMarket;
@@ -56,6 +57,7 @@ public class TradingPresenter implements ITradingPresenter {
         this.rm = rm;
         ArrayList<ExchangeMarket> availableMarkets = this.model.getAvailableMarkets(this.exchange);
         this.view.setAvailableMarkets(availableMarkets);
+        this.model.loadCredentials(this.exchange);
     }
 
     @Override
@@ -100,6 +102,7 @@ public class TradingPresenter implements ITradingPresenter {
 
                     @Override
                     public void onError(@NonNull Throwable e) {
+                        int f = 3;
                         // TODO: If error occurrs too many times in a row, display a warning/error.
                     }
                 };
@@ -129,6 +132,7 @@ public class TradingPresenter implements ITradingPresenter {
             }
         } catch (NumberFormatException e) {
             this.view.showError("");
+            return;
         }
 
         try {
@@ -139,11 +143,19 @@ public class TradingPresenter implements ITradingPresenter {
             }
         } catch (NumberFormatException e) {
             this.view.showError("");
+            return;
         }
 
         MonetaryAmount amount = new MonetaryAmount(quantity, market.getSourceCurrency());
         Order orderRequest = new Order(action, market, orderType, amount, price);
-        Single<Order> single = this.model.makeOrderAsync(this.exchange, orderRequest);
+        Single<Order> single = null;
+        try {
+            single = this.model.makeOrderAsync(this.exchange, orderRequest);
+        } catch (CredentialsNotSetException e) {
+            this.view.showError(this.rm.getCredentialsNotSetErrorString());
+            return;
+        }
+
         DisposableSingleObserver<Order> subscription = new DisposableSingleObserver<Order>() {
 
             @Override
@@ -153,9 +165,7 @@ public class TradingPresenter implements ITradingPresenter {
 
             @Override
             public void onError(@NonNull Throwable e) {
-
-                int f = 3;
-                // TODO: If error occurrs too many times in a row, display a warning/error.
+                int f= 3;
             }
         };
 

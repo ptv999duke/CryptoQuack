@@ -205,7 +205,7 @@ public class AndroidCredentialsStore implements ICredentialsStore {
         String secretKeyKey = this.secretKeyKeyMap.get(exchange);
         String encryptedAccessKey = sharedPref.getString(accessKeyKey, null);
         String encryptedSecretKey = sharedPref.getString(secretKeyKey, null);
-        if (encryptedAccessKey == null || encryptedSecretKey == null) {
+        if ((encryptedAccessKey == null) || (encryptedSecretKey == null)) {
             return null;
         }
 

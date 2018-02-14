@@ -46,16 +46,18 @@ public class GeminiApiRequestInterceptor implements Interceptor {
 
     public void setAccessKeyCredentials(AccessKeyCredentials credentials) {
         this.accessKeyCredentials = credentials;
-        SecretKeySpec signingKey = new SecretKeySpec(
-                this.accessKeyCredentials.getSecretKey().getBytes(),
-                this.ENCRYPTION_SCHEME);
-        this.signingKey = signingKey;
+        if (credentials != null) {
+            SecretKeySpec signingKey = new SecretKeySpec(
+                    this.accessKeyCredentials.getSecretKey().getBytes(),
+                    this.ENCRYPTION_SCHEME);
+            this.signingKey = signingKey;
+        }
     }
 
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request originalRequest = chain.request();
-        if (originalRequest.method().equals("POST")) {
+        if (originalRequest.method().equals("POST") && this.signingKey != null) {
             Request.Builder builder = originalRequest.newBuilder();
             RequestBody originalBody = originalRequest.body();
             Buffer buffer = new Buffer();

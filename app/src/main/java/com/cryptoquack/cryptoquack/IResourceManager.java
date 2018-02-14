@@ -28,4 +28,6 @@ public interface IResourceManager {
                                         double price, Currencies.Currency priceCurrency);
 
     public String getOrderFulfilledPercentageString(int percent);
+
+    public String getCredentialsNotSetErrorString();
 }

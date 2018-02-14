@@ -1,5 +1,8 @@
 package com.cryptoquack.model.exchange;
 
+import android.net.Credentials;
+
+import com.cryptoquack.exceptions.CredentialsNotSetException;
 import com.cryptoquack.model.credentials.AccessKeyCredentials;
 import com.cryptoquack.model.currency.Currencies;
 import com.cryptoquack.model.credentials.ICredentials;
@@ -35,6 +38,12 @@ public abstract class BaseExchange {
 
     public void setCredentials(AccessKeyCredentials credentials) {
         this.credentials = credentials;
+    }
+
+    protected void validateCredentialsLoaded() {
+        if (this.credentials == null) {
+            throw new CredentialsNotSetException();
+        }
     }
 
     public abstract ArrayList<ExchangeMarket> getAvailableMarkets();
