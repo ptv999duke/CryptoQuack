@@ -26,6 +26,8 @@ public interface ITradingView {
 
     public void setAvailableActions(ArrayList<ExchangeAction.ExchangeActions> availableActions);
 
+    public void clearErrorText();
+
     public void showError(String message);
 
     public void addOrderItem(Order order);

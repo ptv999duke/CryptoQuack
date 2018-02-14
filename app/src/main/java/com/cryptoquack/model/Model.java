@@ -1,6 +1,8 @@
 package com.cryptoquack.model;
 
 import com.cryptoquack.model.IModel;
+import com.cryptoquack.model.credentials.AccessKeyCredentials;
+import com.cryptoquack.model.credentials.ICredentialsStore;
 import com.cryptoquack.model.currency.ExchangeMarket;
 import com.cryptoquack.model.currency.MonetaryAmount;
 import com.cryptoquack.model.exchange.BaseExchange;
@@ -21,11 +23,13 @@ import io.reactivex.Single;
 public class Model implements IModel {
 
     private HashMap<Exchanges.Exchange, BaseExchange> exchangeMap;
+    private ICredentialsStore credentialsStore;
 
-    public Model() {
+    public Model(ICredentialsStore credentialsStore) {
         this.exchangeMap = new HashMap<>();
         GeminiExchange geminiExchange = new GeminiExchange();
         this.exchangeMap.put(Exchanges.Exchange.GEMINI, geminiExchange);
+        this.credentialsStore = credentialsStore;
     }
 
     @Override
@@ -60,6 +64,30 @@ public class Model implements IModel {
     @Override
     public Single<Order> makeOrderAsync(Exchanges.Exchange exchange, Order orderRequest) {
         return this.exchangeMap.get(exchange).makeOrderAsync(orderRequest);
+    }
+
+    @Override
+    public AccessKeyCredentials loadCredentials(Exchanges.Exchange exchange) {
+        AccessKeyCredentials credentials = this.credentialsStore.getAccessKeyCredentials(exchange);
+        if (credentials != null) {
+            this.exchangeMap.get(exchange).setCredentials(credentials);
+        }
+
+        return credentials;
+    }
+
+    @Override
+    public AccessKeyCredentials saveCredentials(Exchanges.Exchange exchange,
+                                String accessKey,
+                                String secretKey,
+                                boolean temporary) {
+        if (!temporary) {
+            this.credentialsStore.saveAccessKeyCredentials(exchange, accessKey, secretKey);
+        }
+
+        AccessKeyCredentials credentials = new AccessKeyCredentials(accessKey, secretKey);
+        this.exchangeMap.get(exchange).setCredentials(credentials);
+        return credentials;
     }
 
     @Override

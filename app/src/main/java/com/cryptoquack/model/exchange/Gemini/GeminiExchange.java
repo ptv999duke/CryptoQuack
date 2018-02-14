@@ -49,7 +49,7 @@ public class GeminiExchange extends BaseExchange {
         this.availableActions.add(ExchangeAction.ExchangeActions.BUY);
         this.availableActions.add(ExchangeAction.ExchangeActions.SELL);
         this.useSandbox = useSandbox;
-        this.setCredentials(new AccessKeyCredentials("a", "a"));
+        this.initializeApiClient();
     }
 
     private void initializeApiClient() {
@@ -71,10 +71,6 @@ public class GeminiExchange extends BaseExchange {
     public void setCredentials(AccessKeyCredentials credentials) {
         super.setCredentials(credentials);
         this.initializeApiClient();
-    }
-
-    private void loadCrdentials() {
-        this.setCredentials(null);
     }
 
     @Override
@@ -135,6 +131,7 @@ public class GeminiExchange extends BaseExchange {
             throw new NullPointerException("Order request must not be null");
         }
 
+        this.validateCredentialsLoaded();
         if (!orderRequest.getOrderType().equals(Order.OrderType.LIMIT)) {
             throw new UnavailableOrderTypeException(orderRequest.getOrderType());
         }

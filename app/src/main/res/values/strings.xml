@@ -33,4 +33,8 @@
         <item>Settings</item>
     </string-array>
     <string name="activity_settings_title">Settings</string>
+    <string name="access_key_indicator_label">Access Key:</string>
+    <string name="secret_key_indicator_label">Secret Key:</string>
+    <string name="credentials_save_button_text">Save</string>
+    <string name="credentials_not_set_error">Credentials not set for this exchange. Set it in the Settings menu.</string>
 </resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="credentials_preference_file_key">com.cryptoquack.CREDENTIALS_FILE_KEY</string>
+    <string name="gemini_access_key_key">gemini_access_key</string>
+    <string name="gemini_secret_key_key">gemini_secret_key</string>
+</resources>

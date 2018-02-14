@@ -18,7 +18,6 @@ import java.util.Locale;
 
 public class AndroidResourceManager implements IResourceManager {
 
-    @javax.inject.Inject
     private Resources resources;
 
     public AndroidResourceManager(Resources r) {
@@ -72,5 +71,10 @@ public class AndroidResourceManager implements IResourceManager {
     public String getOrderFulfilledPercentageString(int percent) {
         return String.format(this.resources.getString(R.string.order_filled_progress_string_format),
                 percent);
+    }
+
+    @Override
+    public String getCredentialsNotSetErrorString() {
+        return this.resources.getString(R.string.credentials_not_set_error);
     }
 }

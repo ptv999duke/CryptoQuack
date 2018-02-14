@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.cryptoquack.cryptoquack.AndroidCredentialsStore;
 import com.cryptoquack.cryptoquack.AndroidResourceManager;
 import com.cryptoquack.cryptoquack.Presenter.IOrderItemPresenter;
 import com.cryptoquack.cryptoquack.Presenter.OrderItemPresenter;
@@ -44,7 +45,9 @@ public class OrderItemView extends ConstraintLayout implements IOrderItemView {
 
     public void init() {
         this.presenter = new OrderItemPresenter(AndroidSchedulers.mainThread());
-        this.presenter.onCreate(this, new Model(), new AndroidResourceManager(this.getResources()));
+        this.presenter.onCreate(this,
+                new Model(new AndroidCredentialsStore(this.getContext())),
+                new AndroidResourceManager(this.getResources()));
         LayoutInflater inflater = (LayoutInflater) this.getContext()
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.view_order_item, this, true);

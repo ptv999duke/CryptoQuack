@@ -11,6 +11,7 @@ import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.cryptoquack.cryptoquack.AndroidCredentialsStore;
 import com.cryptoquack.cryptoquack.CryptoQuackActivity;
 import com.cryptoquack.cryptoquack.ExchangeActionAdapter;
 import com.cryptoquack.cryptoquack.ExchangeMarketAdapter;
@@ -60,11 +61,10 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
     private IModel model;
 
     private LinearLayout ordersLayout;
+    private TextView errorTextView;
 
     public TradingActivity() {
         super();
-        IModel model = new Model();
-        this.model = model;
         this.presenter = new TradingPresenter(AndroidSchedulers.mainThread());
     }
 
@@ -96,7 +96,8 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
         this.totalRow = (TableRow) findViewById(R.id.total_price_row);
         this.totalTextView = (TextView) findViewById(R.id.total_price_text_view);
         this.newOrderButton = (Button) findViewById(R.id.new_order_button);
-        this.ordersLayout = (LinearLayout)findViewById(R.id.orders_layout);
+        this.ordersLayout = (LinearLayout) findViewById(R.id.orders_layout);
+        this.errorTextView = (TextView) findViewById(R.id.error_text_view);
 
         this.orderPriceEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -140,6 +141,8 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
             }
         });
 
+        IModel model = new Model(new AndroidCredentialsStore(this));
+        this.model = model;
         this.presenter.onCreate(this, this.model, new AndroidResourceManager(this.getResources()), this.exchangeType);
     }
 
@@ -185,8 +188,19 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
     }
 
     @Override
-    public void showError(String message) {
+    public void clearErrorText() {
+        this.showError(null);
+    }
 
+    @Override
+    public void showError(String message) {
+        if (message == null || message.isEmpty()) {
+            this.errorTextView.setText("");
+            this.errorTextView.setVisibility(View.INVISIBLE);
+        } else {
+            this.errorTextView.setText(message);
+            this.errorTextView.setVisibility(View.VISIBLE);
+        }
     }
 
     private class MarketExchangeSpinnerActivity implements AdapterView.OnItemSelectedListener {
