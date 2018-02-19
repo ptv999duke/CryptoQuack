@@ -1,8 +1,8 @@
 package com.cryptoquack.cryptoquack.Presenter;
 
-import com.cryptoquack.cryptoquack.IResourceManager;
-import com.cryptoquack.cryptoquack.View.IOrderItemView;
-import com.cryptoquack.cryptoquack.View.ISettingsActivity;
+import com.cryptoquack.cryptoquack.Presenter.Interfaces.ISettingsPresenter;
+import com.cryptoquack.cryptoquack.ResourceManager.IResourceManager;
+import com.cryptoquack.cryptoquack.View.Interfaces.ISettingsActivity;
 import com.cryptoquack.model.IModel;
 
 /**

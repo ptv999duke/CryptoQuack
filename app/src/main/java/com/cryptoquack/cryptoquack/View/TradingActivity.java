@@ -12,25 +12,22 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.cryptoquack.cryptoquack.AndroidCredentialsStore;
-import com.cryptoquack.cryptoquack.CryptoQuackActivity;
-import com.cryptoquack.cryptoquack.ExchangeActionAdapter;
-import com.cryptoquack.cryptoquack.ExchangeMarketAdapter;
-import com.cryptoquack.cryptoquack.Presenter.ITradingPresenter;
-import com.cryptoquack.cryptoquack.Presenter.TradingPresenter;
+import com.cryptoquack.cryptoquack.CryptoQuackApp;
+import com.cryptoquack.cryptoquack.Presenter.Interfaces.ITradingPresenter;
 import com.cryptoquack.cryptoquack.R;
-import com.cryptoquack.cryptoquack.AndroidResourceManager;
+import com.cryptoquack.cryptoquack.View.Interfaces.ITradingView;
 import com.cryptoquack.model.IModel;
 import com.cryptoquack.model.Model;
-import com.cryptoquack.model.currency.Currencies;
 import com.cryptoquack.model.currency.ExchangeMarket;
-import com.cryptoquack.model.exchange.BaseExchange;
 import com.cryptoquack.model.exchange.ExchangeAction;
 import com.cryptoquack.model.exchange.Exchanges;
 import com.cryptoquack.model.order.Order;
 
 import java.util.ArrayList;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjection;
 
 public class TradingActivity extends CryptoQuackActivity implements ITradingView {
 
@@ -56,20 +53,19 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
     private TableRow totalRow;
     private TextView totalTextView;
     private Button newOrderButton;
-
-    private ITradingPresenter presenter;
-    private IModel model;
-
     private LinearLayout ordersLayout;
     private TextView errorTextView;
 
+    @Inject
+    public ITradingPresenter presenter;
+
     public TradingActivity() {
         super();
-        this.presenter = new TradingPresenter(AndroidSchedulers.mainThread());
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        CryptoQuackApp.getActivityComponent().inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trading);
 
@@ -141,9 +137,7 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
             }
         });
 
-        IModel model = new Model(new AndroidCredentialsStore(this));
-        this.model = model;
-        this.presenter.onCreate(this, this.model, new AndroidResourceManager(this.getResources()), this.exchangeType);
+        this.presenter.onCreate(this, this.exchangeType);
     }
 
     @Override

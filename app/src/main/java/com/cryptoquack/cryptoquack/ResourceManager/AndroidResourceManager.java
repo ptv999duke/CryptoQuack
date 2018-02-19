@@ -1,6 +1,5 @@
-package com.cryptoquack.cryptoquack;
+package com.cryptoquack.cryptoquack.ResourceManager;
 
-import android.content.Context;
 import android.content.res.Resources;
 
 import com.cryptoquack.cryptoquack.R;
@@ -12,6 +11,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
 /**
  * Created by Duke on 1/30/2018.
  */
@@ -20,6 +21,7 @@ public class AndroidResourceManager implements IResourceManager {
 
     private Resources resources;
 
+    @Inject
     public AndroidResourceManager(Resources r) {
         this.resources = r;
     }

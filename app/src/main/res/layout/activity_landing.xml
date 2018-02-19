@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.cryptoquack.cryptoquack.LandingActivity">
+    tools:context="com.cryptoquack.cryptoquack.View.LandingActivity">
 
     <ListView
         android:id="@+id/landing_activity_main_listview"

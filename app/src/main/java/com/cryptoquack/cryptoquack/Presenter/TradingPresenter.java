@@ -1,8 +1,8 @@
 package com.cryptoquack.cryptoquack.Presenter;
 
-import com.cryptoquack.cryptoquack.IResourceManager;
-import com.cryptoquack.cryptoquack.View.ITradingView;
-import com.cryptoquack.cryptoquack.View.OrderItemView;
+import com.cryptoquack.cryptoquack.Presenter.Interfaces.ITradingPresenter;
+import com.cryptoquack.cryptoquack.ResourceManager.IResourceManager;
+import com.cryptoquack.cryptoquack.View.Interfaces.ITradingView;
 import com.cryptoquack.exceptions.CredentialsNotSetException;
 import com.cryptoquack.model.IModel;
 import com.cryptoquack.model.currency.Currencies;
@@ -16,17 +16,13 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import io.reactivex.Observable;
-import io.reactivex.Observer;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import io.reactivex.Scheduler;
 import io.reactivex.Single;
-import io.reactivex.SingleObserver;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.observers.DisposableSingleObserver;
-import io.reactivex.observers.ResourceObserver;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Duke on 1/28/2018.
@@ -35,26 +31,31 @@ import io.reactivex.schedulers.Schedulers;
 public class TradingPresenter implements ITradingPresenter {
 
     private ITradingView view;
-    private IModel model;
     private Exchanges.Exchange exchange;
+
     private Scheduler uiScheduler;
     private Scheduler bgScheduler;
     private DisposableSingleObserver<Double> getCurrentPriceSubscription;
-    private IResourceManager rm;
 
     private Timer getCurrentPriceTimer;
+    private IModel model;
+    private IResourceManager rm;
 
-    public TradingPresenter(Scheduler uiScheduler) {
+    @Inject
+    public TradingPresenter(@Named("UI_thread") Scheduler uiScheduler,
+                            @Named("BG_thread") Scheduler bgScheduler,
+                            IModel model,
+                            IResourceManager rm) {
         this.uiScheduler = uiScheduler;
-        this.bgScheduler = Schedulers.io();
+        this.bgScheduler = bgScheduler;
+        this.rm = rm;
+        this.model = model;
     }
 
     @Override
-    public void onCreate(ITradingView view, IModel model, IResourceManager rm, Exchanges.Exchange exchange) {
+    public void onCreate(ITradingView view, Exchanges.Exchange exchange) {
         this.view = view;
-        this.model = model;
         this.exchange = exchange;
-        this.rm = rm;
         ArrayList<ExchangeMarket> availableMarkets = this.model.getAvailableMarkets(this.exchange);
         this.view.setAvailableMarkets(availableMarkets);
         this.model.loadCredentials(this.exchange);

@@ -1,4 +1,4 @@
-package com.cryptoquack.cryptoquack;
+package com.cryptoquack.cryptoquack.View;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,8 +6,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import com.cryptoquack.cryptoquack.View.OrderItemView;
-import com.cryptoquack.cryptoquack.View.TradingActivity;
+import com.cryptoquack.cryptoquack.R;
 import com.cryptoquack.model.Common;
 import com.cryptoquack.model.exchange.Exchanges;
 

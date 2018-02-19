@@ -27,6 +27,7 @@ import java.util.HashMap;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
+import javax.inject.Inject;
 
 /**
  * Created by Duke on 2/11/2018.
@@ -43,6 +44,8 @@ public class AndroidCredentialsStore implements ICredentialsStore {
     private HashMap<Exchanges.Exchange, String> secretKeyKeyMap;
     private final String credentialsPreferenceFileKey;
 
+
+    @Inject
     public AndroidCredentialsStore(Context context) {
         try {
             this.keyStore = KeyStore.getInstance(this.KEYSTORE_PROVIDER);

@@ -1,4 +1,4 @@
-package com.cryptoquack.cryptoquack;
+package com.cryptoquack.cryptoquack.ResourceManager;
 
 import com.cryptoquack.model.currency.Currencies;
 import com.cryptoquack.model.currency.MonetaryAmount;

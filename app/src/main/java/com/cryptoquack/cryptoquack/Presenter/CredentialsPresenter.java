@@ -1,7 +1,8 @@
 package com.cryptoquack.cryptoquack.Presenter;
 
-import com.cryptoquack.cryptoquack.IResourceManager;
-import com.cryptoquack.cryptoquack.View.ICredentialsActivity;
+import com.cryptoquack.cryptoquack.Presenter.Interfaces.ICredentialsPresenter;
+import com.cryptoquack.cryptoquack.ResourceManager.IResourceManager;
+import com.cryptoquack.cryptoquack.View.Interfaces.ICredentialsActivity;
 import com.cryptoquack.model.IModel;
 import com.cryptoquack.model.credentials.AccessKeyCredentials;
 import com.cryptoquack.model.exchange.Exchanges;
