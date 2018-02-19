@@ -6,8 +6,6 @@ import javax.inject.Singleton;
 
 import dagger.BindsInstance;
 import dagger.Component;
-import dagger.android.AndroidInjectionModule;
-import dagger.android.AndroidInjector;
 
 /**
  * Created by Duke on 2/17/2018.

@@ -27,13 +27,9 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import dagger.android.AndroidInjection;
-
 public class TradingActivity extends CryptoQuackActivity implements ITradingView {
 
     public static final String EXTRA_TRADING_ACTIVITY_EXCHANGE_TYPE = String.format("%s.exchange_type", TradingActivity.class.getCanonicalName());
-
-    private Exchanges.Exchange exchangeType;
 
     // UI elements
     private ExchangeMarketAdapter marketAdapter;
@@ -71,10 +67,8 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
 
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
-
         String exchangeTypeString = extras.getString(TradingActivity.EXTRA_TRADING_ACTIVITY_EXCHANGE_TYPE);
         final Exchanges.Exchange exchangeType = Exchanges.Exchange.valueOf(exchangeTypeString);
-        this.exchangeType = exchangeType;
 
         this.marketChoiceSpinner = (Spinner) findViewById(R.id.market_choice_spinner);
         this.currentPriceRow = (TableRow) findViewById(R.id.current_price_row);
@@ -125,7 +119,7 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
             }
         });
 
-        this.setTitle(this.getExchangeName(this.exchangeType));
+        this.setTitle(this.getExchangeName(exchangeType));
         this.newOrderButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -137,7 +131,7 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
             }
         });
 
-        this.presenter.onCreate(this, this.exchangeType);
+        this.presenter.onCreate(this, exchangeType);
     }
 
     @Override

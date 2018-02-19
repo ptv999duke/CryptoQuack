@@ -7,10 +7,6 @@ import android.content.res.Resources;
 
 import javax.inject.Inject;
 
-import dagger.android.AndroidInjector;
-import dagger.android.DispatchingAndroidInjector;
-import dagger.android.HasActivityInjector;
-
 /**
  * Created by Duke on 2/15/2018.
  */

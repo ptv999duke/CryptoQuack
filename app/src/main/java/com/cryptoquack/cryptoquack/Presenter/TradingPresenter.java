@@ -31,15 +31,16 @@ import io.reactivex.observers.DisposableSingleObserver;
 public class TradingPresenter implements ITradingPresenter {
 
     private ITradingView view;
+    private IModel model;
+    private IResourceManager rm;
+
     private Exchanges.Exchange exchange;
 
     private Scheduler uiScheduler;
     private Scheduler bgScheduler;
-    private DisposableSingleObserver<Double> getCurrentPriceSubscription;
 
+    private DisposableSingleObserver<Double> getCurrentPriceSubscription;
     private Timer getCurrentPriceTimer;
-    private IModel model;
-    private IResourceManager rm;
 
     @Inject
     public TradingPresenter(@Named("UI_thread") Scheduler uiScheduler,
