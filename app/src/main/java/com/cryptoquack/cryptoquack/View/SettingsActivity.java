@@ -1,34 +1,21 @@
 package com.cryptoquack.cryptoquack.View;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
 import com.cryptoquack.cryptoquack.AndroidCredentialsStore;
-import com.cryptoquack.cryptoquack.AndroidResourceManager;
-import com.cryptoquack.cryptoquack.CryptoQuackActivity;
-import com.cryptoquack.cryptoquack.ExchangesActivity;
-import com.cryptoquack.cryptoquack.ExchangesAdapter;
-import com.cryptoquack.cryptoquack.LandingActivity;
-import com.cryptoquack.cryptoquack.Presenter.ISettingsPresenter;
+import com.cryptoquack.cryptoquack.ResourceManager.AndroidResourceManager;
+import com.cryptoquack.cryptoquack.Presenter.Interfaces.ISettingsPresenter;
 import com.cryptoquack.cryptoquack.Presenter.SettingsPresenter;
-import com.cryptoquack.cryptoquack.Presenter.TradingPresenter;
 import com.cryptoquack.cryptoquack.R;
+import com.cryptoquack.cryptoquack.View.Interfaces.ISettingsActivity;
 import com.cryptoquack.model.Common;
 import com.cryptoquack.model.IModel;
 import com.cryptoquack.model.Model;
 import com.cryptoquack.model.exchange.Exchanges;
-
-import java.util.ArrayList;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by Duke on 2/8/2018.

@@ -1,22 +1,18 @@
 package com.cryptoquack.cryptoquack.View;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cryptoquack.cryptoquack.AndroidCredentialsStore;
-import com.cryptoquack.cryptoquack.AndroidResourceManager;
-import com.cryptoquack.cryptoquack.Presenter.IOrderItemPresenter;
+import com.cryptoquack.cryptoquack.ResourceManager.AndroidResourceManager;
+import com.cryptoquack.cryptoquack.Presenter.Interfaces.IOrderItemPresenter;
 import com.cryptoquack.cryptoquack.Presenter.OrderItemPresenter;
 import com.cryptoquack.cryptoquack.R;
+import com.cryptoquack.cryptoquack.View.Interfaces.IOrderItemView;
 import com.cryptoquack.model.Model;
 import com.cryptoquack.model.order.Order;
 

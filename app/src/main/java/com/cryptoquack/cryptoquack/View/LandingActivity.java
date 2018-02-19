@@ -1,4 +1,4 @@
-package com.cryptoquack.cryptoquack;
+package com.cryptoquack.cryptoquack.View;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,7 +7,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import com.cryptoquack.cryptoquack.View.SettingsActivity;
+import com.cryptoquack.cryptoquack.R;
 
 public class LandingActivity extends CryptoQuackActivity {
 

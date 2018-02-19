@@ -1,4 +1,4 @@
-package com.cryptoquack.cryptoquack.View;
+package com.cryptoquack.cryptoquack.View.Interfaces;
 
 /**
  * Created by Duke on 2/5/2018.

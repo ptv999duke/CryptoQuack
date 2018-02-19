@@ -1,7 +1,9 @@
-package com.cryptoquack.cryptoquack;
+package com.cryptoquack.cryptoquack.View;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
+import com.cryptoquack.cryptoquack.R;
 import com.cryptoquack.model.exchange.Exchanges;
 
 import java.util.HashMap;

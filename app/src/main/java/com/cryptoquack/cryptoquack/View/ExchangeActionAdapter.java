@@ -1,4 +1,4 @@
-package com.cryptoquack.cryptoquack;
+package com.cryptoquack.cryptoquack.View;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.cryptoquack.cryptoquack.R;
 import com.cryptoquack.model.currency.ExchangeMarket;
 import com.cryptoquack.model.exchange.ExchangeAction;
 

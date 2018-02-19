@@ -1,4 +1,4 @@
-package com.cryptoquack.cryptoquack;
+package com.cryptoquack.cryptoquack.View;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.cryptoquack.cryptoquack.UICommon;
 import com.cryptoquack.model.exchange.Exchanges;
 
 import java.util.HashMap;

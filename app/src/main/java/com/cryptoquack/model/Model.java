@@ -14,6 +14,8 @@ import com.cryptoquack.model.order.Order;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.inject.Inject;
+
 import io.reactivex.Single;
 
 /**
@@ -23,8 +25,9 @@ import io.reactivex.Single;
 public class Model implements IModel {
 
     private HashMap<Exchanges.Exchange, BaseExchange> exchangeMap;
-    private ICredentialsStore credentialsStore;
+    private final ICredentialsStore credentialsStore;
 
+    @Inject
     public Model(ICredentialsStore credentialsStore) {
         this.exchangeMap = new HashMap<>();
         GeminiExchange geminiExchange = new GeminiExchange();

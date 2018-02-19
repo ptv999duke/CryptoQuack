@@ -1,7 +1,5 @@
 package com.cryptoquack.exceptions;
 
-import com.cryptoquack.cryptoquack.CryptoQuackActivity;
-
 /**
  * Created by Duke on 1/27/2018.
  */

@@ -7,12 +7,11 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.cryptoquack.cryptoquack.AndroidCredentialsStore;
-import com.cryptoquack.cryptoquack.AndroidResourceManager;
-import com.cryptoquack.cryptoquack.CryptoQuackActivity;
-import com.cryptoquack.cryptoquack.IResourceManager;
+import com.cryptoquack.cryptoquack.ResourceManager.AndroidResourceManager;
 import com.cryptoquack.cryptoquack.Presenter.CredentialsPresenter;
-import com.cryptoquack.cryptoquack.Presenter.ICredentialsPresenter;
+import com.cryptoquack.cryptoquack.Presenter.Interfaces.ICredentialsPresenter;
 import com.cryptoquack.cryptoquack.R;
+import com.cryptoquack.cryptoquack.View.Interfaces.ICredentialsActivity;
 import com.cryptoquack.model.IModel;
 import com.cryptoquack.model.Model;
 import com.cryptoquack.model.exchange.Exchanges;

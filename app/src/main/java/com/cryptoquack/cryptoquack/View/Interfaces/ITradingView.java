@@ -1,4 +1,4 @@
-package com.cryptoquack.cryptoquack.View;
+package com.cryptoquack.cryptoquack.View.Interfaces;
 
 import com.cryptoquack.model.IModel;
 import com.cryptoquack.model.currency.Currencies;

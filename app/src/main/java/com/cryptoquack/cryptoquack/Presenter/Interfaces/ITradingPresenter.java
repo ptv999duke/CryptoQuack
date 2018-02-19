@@ -1,8 +1,6 @@
-package com.cryptoquack.cryptoquack.Presenter;
+package com.cryptoquack.cryptoquack.Presenter.Interfaces;
 
-import com.cryptoquack.cryptoquack.IResourceManager;
-import com.cryptoquack.cryptoquack.View.ITradingView;
-import com.cryptoquack.model.IModel;
+import com.cryptoquack.cryptoquack.View.Interfaces.ITradingView;
 import com.cryptoquack.model.currency.ExchangeMarket;
 import com.cryptoquack.model.exchange.ExchangeAction;
 import com.cryptoquack.model.exchange.Exchanges;
@@ -14,7 +12,7 @@ import com.cryptoquack.model.order.Order;
 
 public interface ITradingPresenter {
 
-    public void onCreate(ITradingView view, IModel model, IResourceManager rm, Exchanges.Exchange exchange);
+    public void onCreate(ITradingView view, Exchanges.Exchange exchange);
 
     public void onMarketChanged(ExchangeMarket market);
 
