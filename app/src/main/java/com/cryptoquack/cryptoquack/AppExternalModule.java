@@ -6,6 +6,7 @@ import android.content.res.Resources;
 
 import com.cryptoquack.cryptoquack.ResourceManager.AndroidResourceManager;
 import com.cryptoquack.cryptoquack.ResourceManager.IResourceManager;
+import com.cryptoquack.model.ILogger;
 import com.cryptoquack.model.IModel;
 import com.cryptoquack.model.Model;
 import com.cryptoquack.model.credentials.ICredentials;
@@ -20,6 +21,7 @@ import dagger.Provides;
 import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * Created by Duke on 2/15/2018.
@@ -30,16 +32,21 @@ public class AppExternalModule {
 
     private final Scheduler uiScheduler;
     private final Scheduler backgroundScheduler;
+    private final Timber.Tree tree;
     private Application application;
     private Context context;
     private Resources r;
 
-    public AppExternalModule(Application application, Context context, Resources r) {
+    public AppExternalModule(Application application,
+                             Context context,
+                             Resources r,
+                             Timber.Tree tree) {
         this.application = application;
         this.context = context;
         this.r = r;
         this.uiScheduler = AndroidSchedulers.mainThread();
         this.backgroundScheduler = Schedulers.io();
+        this.tree = tree;
     }
 
     @Provides
@@ -72,5 +79,11 @@ public class AppExternalModule {
     @Singleton
     public Resources providesResources() {
         return this.r;
+    }
+
+    @Provides
+    @Singleton
+    public ILogger providesLogger() {
+        return new AndroidLogger(this.tree);
     }
 }

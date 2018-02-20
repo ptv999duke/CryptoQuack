@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.cryptoquack.cryptoquack.AndroidCredentialsStore;
+import com.cryptoquack.cryptoquack.CryptoQuackApp;
 import com.cryptoquack.cryptoquack.ResourceManager.AndroidResourceManager;
 import com.cryptoquack.cryptoquack.Presenter.Interfaces.ISettingsPresenter;
 import com.cryptoquack.cryptoquack.Presenter.SettingsPresenter;
@@ -17,31 +18,36 @@ import com.cryptoquack.model.IModel;
 import com.cryptoquack.model.Model;
 import com.cryptoquack.model.exchange.Exchanges;
 
+import javax.inject.Inject;
+
 /**
  * Created by Duke on 2/8/2018.
  */
 
 public class SettingsActivity extends CryptoQuackActivity implements ISettingsActivity {
 
-    private IModel model;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
-    private ISettingsPresenter presenter;
     private ExchangesAdapter adapter;
+
+    @Inject
+    public IModel model;
+
+    @Inject
+    public ISettingsPresenter presenter;
 
     public SettingsActivity() {
         super();
-        this.presenter = new SettingsPresenter();
     }
 
     protected void onCreate(Bundle savedInstanceState) {
+        CryptoQuackApp.getActivityComponent().inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
         IModel model = new Model(new AndroidCredentialsStore(this));
         this.model = model;
-        this.presenter.onCreate(this, this.model, new AndroidResourceManager(this.getResources()));
-
+        this.presenter.onCreate(this);
         this.setTitle(this.getString(R.string.activity_settings_title));
         this.recyclerView = (RecyclerView) findViewById(R.id.settings_list_recycler_view);
         this.recyclerView.setHasFixedSize(true);
@@ -53,16 +59,14 @@ public class SettingsActivity extends CryptoQuackActivity implements ISettingsAc
     @Override
     public void setAvailableExchanges(Exchanges.Exchange[] availableExchanges) {
         this.adapter = new ExchangesAdapter(Common.exchanges, this.exchangeToNameMap, this);
-        this.presenter.onCreate(this,
-                this.model,
-                new AndroidResourceManager(this.getResources()));
         this.adapter.setCallBack(new ExchangesAdapter.ExchangesRecyclerViewListener() {
 
             @Override
             public void onExchangeClick(Exchanges.Exchange[] exchanges, int position) {
                 Exchanges.Exchange exchangeType = exchanges[position];
                 Bundle credentialsActivityBundle = new Bundle();
-                credentialsActivityBundle.putString(CredentialsActivity.EXTRA_CREDENTIALS_ACTIVITY_EXCHANGE_TYPE,
+                credentialsActivityBundle.putString(CredentialsActivity.
+                                EXTRA_CREDENTIALS_ACTIVITY_EXCHANGE_TYPE,
                         exchangeType.name());
                 Intent intent = new Intent(SettingsActivity.this, CredentialsActivity.class);
                 intent.putExtras(credentialsActivityBundle);

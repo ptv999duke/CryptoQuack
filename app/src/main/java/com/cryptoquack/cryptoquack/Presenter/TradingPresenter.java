@@ -4,6 +4,7 @@ import com.cryptoquack.cryptoquack.Presenter.Interfaces.ITradingPresenter;
 import com.cryptoquack.cryptoquack.ResourceManager.IResourceManager;
 import com.cryptoquack.cryptoquack.View.Interfaces.ITradingView;
 import com.cryptoquack.exceptions.CredentialsNotSetException;
+import com.cryptoquack.model.ILogger;
 import com.cryptoquack.model.IModel;
 import com.cryptoquack.model.currency.Currencies;
 import com.cryptoquack.model.currency.ExchangeMarket;
@@ -30,6 +31,7 @@ import io.reactivex.observers.DisposableSingleObserver;
 
 public class TradingPresenter implements ITradingPresenter {
 
+    private final ILogger logger;
     private ITradingView view;
     private IModel model;
     private IResourceManager rm;
@@ -46,11 +48,13 @@ public class TradingPresenter implements ITradingPresenter {
     public TradingPresenter(@Named("UI_thread") Scheduler uiScheduler,
                             @Named("BG_thread") Scheduler bgScheduler,
                             IModel model,
-                            IResourceManager rm) {
+                            IResourceManager rm,
+                            ILogger logger) {
         this.uiScheduler = uiScheduler;
         this.bgScheduler = bgScheduler;
         this.rm = rm;
         this.model = model;
+        this.logger = logger;
     }
 
     @Override
