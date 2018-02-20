@@ -4,7 +4,7 @@ import com.cryptoquack.cryptoquack.Presenter.Interfaces.ITradingPresenter;
 import com.cryptoquack.cryptoquack.ResourceManager.IResourceManager;
 import com.cryptoquack.cryptoquack.View.Interfaces.ITradingView;
 import com.cryptoquack.exceptions.CredentialsNotSetException;
-import com.cryptoquack.model.ILogger;
+import com.cryptoquack.model.logger.ILogger;
 import com.cryptoquack.model.IModel;
 import com.cryptoquack.model.currency.Currencies;
 import com.cryptoquack.model.currency.ExchangeMarket;

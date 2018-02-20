@@ -1,4 +1,4 @@
-package com.cryptoquack.model;
+package com.cryptoquack.model.logger;
 
 import org.jetbrains.annotations.NonNls;
 

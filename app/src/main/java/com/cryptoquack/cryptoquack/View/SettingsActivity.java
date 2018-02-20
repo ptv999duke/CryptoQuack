@@ -45,8 +45,6 @@ public class SettingsActivity extends CryptoQuackActivity implements ISettingsAc
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        IModel model = new Model(new AndroidCredentialsStore(this));
-        this.model = model;
         this.presenter.onCreate(this);
         this.setTitle(this.getString(R.string.activity_settings_title));
         this.recyclerView = (RecyclerView) findViewById(R.id.settings_list_recycler_view);

@@ -4,18 +4,11 @@ import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
 
-import com.cryptoquack.cryptoquack.ResourceManager.AndroidResourceManager;
-import com.cryptoquack.cryptoquack.ResourceManager.IResourceManager;
-import com.cryptoquack.model.ILogger;
-import com.cryptoquack.model.IModel;
-import com.cryptoquack.model.Model;
-import com.cryptoquack.model.credentials.ICredentials;
-import com.cryptoquack.model.credentials.ICredentialsStore;
+import com.cryptoquack.model.logger.ILogger;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
 import io.reactivex.Scheduler;
@@ -27,7 +20,7 @@ import timber.log.Timber;
  * Created by Duke on 2/15/2018.
  */
 
-@Module(includes = ActivityModule.class)
+@Module()
 public class AppExternalModule {
 
     private final Scheduler uiScheduler;

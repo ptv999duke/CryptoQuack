@@ -11,14 +11,11 @@ import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.cryptoquack.cryptoquack.AndroidCredentialsStore;
 import com.cryptoquack.cryptoquack.CryptoQuackApp;
 import com.cryptoquack.cryptoquack.Presenter.Interfaces.ITradingPresenter;
 import com.cryptoquack.cryptoquack.R;
 import com.cryptoquack.cryptoquack.View.Interfaces.ITradingView;
-import com.cryptoquack.model.ILogger;
-import com.cryptoquack.model.IModel;
-import com.cryptoquack.model.Model;
+import com.cryptoquack.model.logger.ILogger;
 import com.cryptoquack.model.currency.ExchangeMarket;
 import com.cryptoquack.model.exchange.ExchangeAction;
 import com.cryptoquack.model.exchange.Exchanges;

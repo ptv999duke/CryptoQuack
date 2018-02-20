@@ -3,6 +3,7 @@ package com.cryptoquack.model.exchange.Gemini;
 import com.cryptoquack.exceptions.UnavailableActionException;
 import com.cryptoquack.exceptions.UnavailableMarketException;
 import com.cryptoquack.exceptions.UnavailableOrderTypeException;
+import com.cryptoquack.model.logger.ILogger;
 import com.cryptoquack.model.credentials.AccessKeyCredentials;
 import com.cryptoquack.model.currency.ExchangeMarket;
 import com.cryptoquack.model.currency.MonetaryAmount;
@@ -35,32 +36,37 @@ public class GeminiExchange extends BaseExchange {
     private final ArrayList<ExchangeAction.ExchangeActions> availableActions = new ArrayList<>();
     private boolean useSandbox;
     private GeminiApiClientV1 apiClient;
+    private String baseUrl;
 
-    public GeminiExchange() {
-        this(true);
+    public GeminiExchange(ILogger logger) {
+        this(true, logger);
     }
 
-    public GeminiExchange(boolean useSandbox) {
+    public GeminiExchange(boolean useSandbox, ILogger logger) {
         super(Exchanges.Exchange.GEMINI);
+        this.useSandbox = useSandbox;
+        if (this.useSandbox) {
+            this.exchangeType = Exchanges.Exchange.GEMINI_SANDBOX;
+        }
+
+        this.baseUrl = this.useSandbox ? GeminiHelper.SANDBOX_REST_API_URL :
+                GeminiHelper.REST_API_URL;
+
         this.availableMarkets.add(ExchangeMarket.BTCUSD);
         this.availableMarkets.add(ExchangeMarket.ETHUSD);
         this.availableMarkets.add(ExchangeMarket.ETHBTC);
 
         this.availableActions.add(ExchangeAction.ExchangeActions.BUY);
         this.availableActions.add(ExchangeAction.ExchangeActions.SELL);
-        this.useSandbox = useSandbox;
         this.initializeApiClient();
     }
 
     private void initializeApiClient() {
         Retrofit.Builder apiClientBuilder = new Retrofit.Builder();
-        String baseUrl = this.useSandbox ? GeminiHelper.SANDBOX_REST_API_URL : GeminiHelper.REST_API_URL;
-        apiClientBuilder.baseUrl(baseUrl);
         OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder();
-        // TODO: Catch exception here. If credentials has not been established yet, then return an
-        // an error which would indicate to front end that they have to enter credentials.
         httpClientBuilder.interceptors().add(new GeminiApiRequestInterceptor(this.credentials));
         apiClientBuilder.client(httpClientBuilder.build());
+        apiClientBuilder.baseUrl(this.baseUrl);
         apiClientBuilder.addConverterFactory(GsonConverterFactory.create(BaseExchange.GSON));
         apiClientBuilder.addCallAdapterFactory(RxJava2CallAdapterFactory.create());
         Retrofit r = apiClientBuilder.build();

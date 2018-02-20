@@ -8,6 +8,7 @@ public class Exchanges {
 
     public enum Exchange {
         GEMINI,
+        GEMINI_SANDBOX,
         BITTREX,
         BINANCE;
     }

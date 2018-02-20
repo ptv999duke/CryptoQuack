@@ -55,7 +55,6 @@ public class CredentialsActivity extends CryptoQuackActivity implements ICredent
 
         String exchangeTypeString = extras.getString(this.EXTRA_CREDENTIALS_ACTIVITY_EXCHANGE_TYPE);
         final Exchanges.Exchange exchangeType = Exchanges.Exchange.valueOf(exchangeTypeString);
-        this.model = new Model(new AndroidCredentialsStore(this));
         this.presenter.onCreate(this, exchangeType);
         this.saveButton.setOnClickListener(new View.OnClickListener() {
             @Override

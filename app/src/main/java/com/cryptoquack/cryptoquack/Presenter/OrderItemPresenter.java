@@ -3,7 +3,7 @@ package com.cryptoquack.cryptoquack.Presenter;
 import com.cryptoquack.cryptoquack.Presenter.Interfaces.IOrderItemPresenter;
 import com.cryptoquack.cryptoquack.ResourceManager.IResourceManager;
 import com.cryptoquack.cryptoquack.View.Interfaces.IOrderItemView;
-import com.cryptoquack.model.ILogger;
+import com.cryptoquack.model.logger.ILogger;
 import com.cryptoquack.model.IModel;
 import com.cryptoquack.model.currency.Currencies;
 import com.cryptoquack.model.order.Order;
@@ -14,7 +14,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import io.reactivex.Scheduler;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Duke on 2/5/2018.

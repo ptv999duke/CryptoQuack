@@ -64,6 +64,12 @@ public class AndroidCredentialsStore implements ICredentialsStore {
         this.secretKeyKeyMap.put(
                 Exchanges.Exchange.GEMINI,
                 this.context.getString(R.string.gemini_secret_key_key));
+        this.accessKeyKeyMap.put(
+                Exchanges.Exchange.GEMINI_SANDBOX,
+                this.context.getString(R.string.gemini_sandbox_access_key_key));
+        this.secretKeyKeyMap.put(
+                Exchanges.Exchange.GEMINI_SANDBOX,
+                this.context.getString(R.string.gemini_sandbox_secret_key_key));
         this.credentialsPreferenceFileKey = this.context.getString(
                 R.string.credentials_preference_file_key);
     }
@@ -206,6 +212,10 @@ public class AndroidCredentialsStore implements ICredentialsStore {
                 Context.MODE_PRIVATE);
         String accessKeyKey = this.accessKeyKeyMap.get(exchange);
         String secretKeyKey = this.secretKeyKeyMap.get(exchange);
+        if (accessKeyKey == null || secretKeyKey == null) {
+            return null;
+        }
+
         String encryptedAccessKey = sharedPref.getString(accessKeyKey, null);
         String encryptedSecretKey = sharedPref.getString(secretKeyKey, null);
         if ((encryptedAccessKey == null) || (encryptedSecretKey == null)) {

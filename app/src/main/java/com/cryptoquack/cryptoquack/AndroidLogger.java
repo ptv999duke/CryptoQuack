@@ -1,6 +1,6 @@
 package com.cryptoquack.cryptoquack;
 
-import com.cryptoquack.model.ILogger;
+import com.cryptoquack.model.logger.ILogger;
 
 import org.jetbrains.annotations.NonNls;
 

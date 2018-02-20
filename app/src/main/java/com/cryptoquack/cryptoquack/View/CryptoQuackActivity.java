@@ -24,8 +24,11 @@ public abstract class CryptoQuackActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.exchangeToNameMap.put(Exchanges.Exchange.GEMINI, getString(R.string.exchange_gemini_name));
+        this.exchangeToNameMap.put(Exchanges.Exchange.GEMINI_SANDBOX,
+                getString(R.string.exchange_gemini_sandbox_name));
         this.exchangeToNameMap.put(Exchanges.Exchange.BITTREX, getString(R.string.exchange_bittrex_name));
-        this.exchangeToNameMap.put(Exchanges.Exchange.BINANCE, getString(R.string.exchange_binance_name));
+        this.exchangeToNameMap.put(Exchanges.Exchange.BINANCE,
+                getString(R.string.exchange_binance_name));
     }
 
     public String getExchangeName(Exchanges.Exchange exchange) {
