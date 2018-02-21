@@ -84,11 +84,13 @@ public class AndroidCredentialsStore implements ICredentialsStore {
     public AndroidCredentialsStore(Context context,
                                    HashMap<Exchanges.Exchange, String> accessKeyKeyMap,
                                    HashMap<Exchanges.Exchange, String> secretKeyKeyMap,
-                                   String credentialsPreferenceFileKey) {
+                                   String credentialsPreferenceFileKey,
+                                   ILogger logger) {
         this.context = context;
         this.accessKeyKeyMap = accessKeyKeyMap;
         this.secretKeyKeyMap = secretKeyKeyMap;
         this.credentialsPreferenceFileKey = credentialsPreferenceFileKey;
+        this.logger = logger;
     }
 
     private String encryptData(String data) {
@@ -226,6 +228,11 @@ public class AndroidCredentialsStore implements ICredentialsStore {
         SharedPreferences sharedPref = this.context.getSharedPreferences(
                 this.credentialsPreferenceFileKey,
                 Context.MODE_PRIVATE);
+        if (!this.accessKeyKeyMap.containsKey(exchange) ||
+                !this.secretKeyKeyMap.containsKey(exchange)) {
+            throw new UnavailableExchangeException(exchange, "Error when getting credentials");
+        }
+
         String accessKeyKey = this.accessKeyKeyMap.get(exchange);
         String secretKeyKey = this.secretKeyKeyMap.get(exchange);
         if (accessKeyKey == null || secretKeyKey == null) {

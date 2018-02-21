@@ -3,6 +3,7 @@ package com.cryptoquack.model.order;
 import com.cryptoquack.model.currency.ExchangeMarket;
 import com.cryptoquack.model.currency.MonetaryAmount;
 import com.cryptoquack.model.exchange.ExchangeAction;
+import com.cryptoquack.model.exchange.Exchanges;
 
 import java.util.Date;
 
@@ -29,6 +30,7 @@ public class Order {
     private ExchangeAction.ExchangeActions action;
     private ExchangeMarket market;
     private MonetaryAmount totalAmount;
+    private Exchanges.Exchange exchange;
     private double price;
     private MonetaryAmount amountFulfilled;
     private MonetaryAmount amountRemaining;
@@ -36,20 +38,17 @@ public class Order {
     private Date orderTime;
     private MonetaryAmount fee;
 
-    public Order(Order order) {
-        this(order.getAction(), order.getMarket(), order.getOrderType(), order.totalAmount,
-                order.getPrice());
-        this.orderId = order.getOrderId();
-    }
-
     public Order() {}
 
     public Order(String orderId) {
         this.setOrderId(orderId);
     }
 
-    public Order(ExchangeAction.ExchangeActions action, ExchangeMarket market, OrderType orderType,
-                 MonetaryAmount totalAmount, double price) {
+    public Order(ExchangeAction.ExchangeActions action,
+                 ExchangeMarket market,
+                 OrderType orderType,
+                 MonetaryAmount totalAmount,
+                 double price) {
         this.setAction(action);
         this.setOrderMarketAmount(market, totalAmount);
         this.setOrderType(orderType);
@@ -62,6 +61,14 @@ public class Order {
 
     public void setOrderId(String orderId) {
         this.orderId = orderId;
+    }
+
+    public Exchanges.Exchange getExchange() {
+        return this.exchange;
+    }
+
+    public void setExchange(Exchanges.Exchange exchange) {
+        this.exchange = exchange;
     }
 
     public double getPrice() {

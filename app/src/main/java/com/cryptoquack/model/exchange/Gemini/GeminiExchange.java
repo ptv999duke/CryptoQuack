@@ -1,8 +1,10 @@
 package com.cryptoquack.model.exchange.Gemini;
 
+import com.cryptoquack.exceptions.ApiLimitException;
 import com.cryptoquack.exceptions.UnavailableActionException;
 import com.cryptoquack.exceptions.UnavailableMarketException;
 import com.cryptoquack.exceptions.UnavailableOrderTypeException;
+import com.cryptoquack.exceptions.UnknownNetworkException;
 import com.cryptoquack.model.logger.ILogger;
 import com.cryptoquack.model.credentials.AccessKeyCredentials;
 import com.cryptoquack.model.currency.ExchangeMarket;
@@ -22,6 +24,7 @@ import io.reactivex.Single;
 import io.reactivex.SingleSource;
 import io.reactivex.functions.Function;
 import okhttp3.OkHttpClient;
+import retrofit2.HttpException;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -34,6 +37,7 @@ public class GeminiExchange extends BaseExchange {
 
     private final ArrayList<ExchangeMarket> availableMarkets = new ArrayList<>();
     private final ArrayList<ExchangeAction.ExchangeActions> availableActions = new ArrayList<>();
+    private final ILogger logger;
     private boolean useSandbox;
     private GeminiApiClientV1 apiClient;
     private String baseUrl;
@@ -58,6 +62,7 @@ public class GeminiExchange extends BaseExchange {
 
         this.availableActions.add(ExchangeAction.ExchangeActions.BUY);
         this.availableActions.add(ExchangeAction.ExchangeActions.SELL);
+        this.logger = logger;
         this.initializeApiClient();
     }
 
@@ -93,6 +98,7 @@ public class GeminiExchange extends BaseExchange {
             throw new UnavailableMarketException(market, e.getMessage(), e);
         }
 
+        this.logger.v("Getting current price for %s", market);
         Single<Double> single = this.apiClient.getPubTicker(symbol)
                 .flatMap(new Function<GeminiTicker, SingleSource<Double>>() {
                     @Override
@@ -107,7 +113,6 @@ public class GeminiExchange extends BaseExchange {
     @Override
     public Double getCurrentPrice(ExchangeMarket market) throws UnavailableMarketException {
         Single<Double> single = this.getCurrentPriceAsync(market);
-        // TODO: Catch exception and throw custom exception based on error
         Double price = single.blockingGet();
         return price;
     }
@@ -127,7 +132,6 @@ public class GeminiExchange extends BaseExchange {
     @Override
     public Order makeOrder(Order orderRequest) {
         Single<Order> single = this.makeOrderAsync(orderRequest);
-        // TODO: Catch exception and throw custom exception based on error
         return single.blockingGet();
     }
 
@@ -156,12 +160,41 @@ public class GeminiExchange extends BaseExchange {
         GeminiNewOrderRequest geminiOrderRequest = new GeminiNewOrderRequest(marketSymbol,
                 orderRequest.getTotalAmount().getAmount(), orderRequest.getPrice(), actionSymbol);
         Single<GeminiOrder> newOrderCall = this.apiClient.newOrder(geminiOrderRequest);
+        this.logger.i("Making order to %s on Gemini exchange", orderRequest.getAction());
         Single<Order> single = newOrderCall.flatMap(new Function<GeminiOrder, SingleSource<Order>>() {
+
             @Override
             public SingleSource<Order> apply(GeminiOrder geminiOrder) {
-                return Single.just(geminiOrder.convertToOrder());
+                Order order = geminiOrder.convertToOrder();
+                order.setExchange(exchangeType);
+                return Single.just(order);
             }
         });
+
+        single = single.onErrorResumeNext(
+                new Function<Throwable, SingleSource<Order>>() {
+                    @Override
+                    public SingleSource<Order> apply(Throwable t) {
+                        if (t instanceof retrofit2.adapter.rxjava2.HttpException) {
+                            retrofit2.adapter.rxjava2.HttpException e =
+                                    (retrofit2.adapter.rxjava2.HttpException) t;
+                            if (e.code() == 429) {
+                                throw new ApiLimitException(exchangeType,
+                                        "Api limit hit when making order");
+                            }
+                        } else if (t instanceof HttpException) {
+                            HttpException e = (HttpException) t;
+                            if (e.code() == 429) {
+                                throw new ApiLimitException(exchangeType,
+                                        "Api limit hit when making order");
+                            }
+                        }
+
+                        throw new UnknownNetworkException(
+                                "Unexpected error when making order request",
+                                t);
+                    }
+                });
 
         return single;
     }
