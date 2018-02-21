@@ -11,7 +11,7 @@ import com.cryptoquack.model.order.Order;
 
 public interface IOrderItemPresenter {
 
-    public void onCreate(IOrderItemView view, IModel model, IResourceManager rm);
+    public void onCreate(IOrderItemView view);
 
     public void setOrder(Order order);
 

@@ -12,8 +12,6 @@ import com.cryptoquack.model.exchange.Exchanges;
 public interface ICredentialsPresenter {
 
     public void onCreate(ICredentialsActivity view,
-                         IModel model,
-                         IResourceManager rm,
                          Exchanges.Exchange exchange);
 
     public void onCredentialsSaveClick(String accessKey, String secretKey);

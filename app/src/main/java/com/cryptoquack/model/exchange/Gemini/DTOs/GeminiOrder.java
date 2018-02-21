@@ -3,6 +3,8 @@ package com.cryptoquack.model.exchange.Gemini.DTOs;
 import com.cryptoquack.model.currency.ExchangeMarket;
 import com.cryptoquack.model.currency.MonetaryAmount;
 import com.cryptoquack.model.exchange.ExchangeAction;
+import com.cryptoquack.model.exchange.Exchanges;
+import com.cryptoquack.model.exchange.Gemini.GeminiExchange;
 import com.cryptoquack.model.exchange.Gemini.GeminiHelper;
 import com.cryptoquack.model.order.Order;
 import com.google.gson.annotations.Expose;

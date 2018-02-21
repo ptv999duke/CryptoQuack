@@ -79,4 +79,19 @@ public class AndroidResourceManager implements IResourceManager {
     public String getCredentialsNotSetErrorString() {
         return this.resources.getString(R.string.credentials_not_set_error);
     }
+
+    @Override
+    public String getUnknownErrorWhenPlacingOrderString() {
+        return this.resources.getString(R.string.unknown_error_when_placing_order_message);
+    }
+
+    @Override
+    public String getInvalidPriceErrorString() {
+        return this.resources.getString(R.string.invalid_price_error_string);
+    }
+
+    @Override
+    public String getInvalidQuantityErrorString() {
+        return this.resources.getString(R.string.invalid_quantity_error_string);
+    }
 }

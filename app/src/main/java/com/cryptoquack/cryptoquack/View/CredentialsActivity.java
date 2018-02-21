@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.cryptoquack.cryptoquack.AndroidCredentialsStore;
+import com.cryptoquack.cryptoquack.CryptoQuackApp;
 import com.cryptoquack.cryptoquack.ResourceManager.AndroidResourceManager;
 import com.cryptoquack.cryptoquack.Presenter.CredentialsPresenter;
 import com.cryptoquack.cryptoquack.Presenter.Interfaces.ICredentialsPresenter;
@@ -15,6 +16,8 @@ import com.cryptoquack.cryptoquack.View.Interfaces.ICredentialsActivity;
 import com.cryptoquack.model.IModel;
 import com.cryptoquack.model.Model;
 import com.cryptoquack.model.exchange.Exchanges;
+
+import javax.inject.Inject;
 
 /**
  * Created by Duke on 2/11/2018.
@@ -25,18 +28,21 @@ public class CredentialsActivity extends CryptoQuackActivity implements ICredent
     public static final String EXTRA_CREDENTIALS_ACTIVITY_EXCHANGE_TYPE = String.format(
             "%s.exchange_type",
             CredentialsActivity.class.getCanonicalName());
-    private ICredentialsPresenter presenter;
-    private IModel model;
+
     private EditText accessKeyEditText;
     private EditText secretKeyEditText;
     private Button saveButton;
 
-    public CredentialsActivity() {
-        this.presenter = new CredentialsPresenter();
-    }
+    @Inject
+    protected ICredentialsPresenter presenter;
+    @Inject
+    public IModel model;
+
+    public CredentialsActivity() { }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        CryptoQuackApp.getActivityComponent().inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_credentials);
 
@@ -49,14 +55,7 @@ public class CredentialsActivity extends CryptoQuackActivity implements ICredent
 
         String exchangeTypeString = extras.getString(this.EXTRA_CREDENTIALS_ACTIVITY_EXCHANGE_TYPE);
         final Exchanges.Exchange exchangeType = Exchanges.Exchange.valueOf(exchangeTypeString);
-        this.model = new Model(new AndroidCredentialsStore(this));
-        this.presenter.onCreate(this, this.model, new AndroidResourceManager(this.getResources()),
-                exchangeType);
-        this.presenter.onCreate(this,
-                this.model,
-                new AndroidResourceManager(this.getResources()),
-                exchangeType);
-
+        this.presenter.onCreate(this, exchangeType);
         this.saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -3,14 +3,17 @@ package com.cryptoquack.cryptoquack.Presenter;
 import com.cryptoquack.cryptoquack.Presenter.Interfaces.IOrderItemPresenter;
 import com.cryptoquack.cryptoquack.ResourceManager.IResourceManager;
 import com.cryptoquack.cryptoquack.View.Interfaces.IOrderItemView;
+import com.cryptoquack.model.logger.ILogger;
 import com.cryptoquack.model.IModel;
 import com.cryptoquack.model.currency.Currencies;
 import com.cryptoquack.model.order.Order;
 
 import java.util.Date;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import io.reactivex.Scheduler;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Duke on 2/5/2018.
@@ -21,21 +24,28 @@ public class OrderItemPresenter implements IOrderItemPresenter {
     private IOrderItemView view;
     private IModel model;
     private IResourceManager rm;
+    private Scheduler uiScheduler;
+    private Scheduler bgScheduler;
+    private final ILogger logger;
+
     private Order order;
 
-    private final Scheduler uiScheduler;
-    private Scheduler bgScheduler = null;
-
-    public OrderItemPresenter(Scheduler uiScheduler) {
+    @Inject
+    public OrderItemPresenter(@Named("UI_thread")Scheduler uiScheduler,
+                              @Named("BG_thread") Scheduler bgScheduler,
+                              IModel model,
+                              IResourceManager rm,
+                              ILogger logger) {
         this.uiScheduler = uiScheduler;
+        this.bgScheduler = bgScheduler;
+        this.model = model;
+        this.rm = rm;
+        this.logger = logger;
     }
 
     @Override
-    public void onCreate(IOrderItemView view, IModel model, IResourceManager rm) {
-        this.bgScheduler = Schedulers.io();
+    public void onCreate(IOrderItemView view) {
         this.view = view;
-        this.model = model;
-        this.rm = rm;
     }
 
     public void setOrder(Order order) {

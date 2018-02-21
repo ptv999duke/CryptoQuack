@@ -30,4 +30,10 @@ public interface IResourceManager {
     public String getOrderFulfilledPercentageString(int percent);
 
     public String getCredentialsNotSetErrorString();
+
+    public String getUnknownErrorWhenPlacingOrderString();
+
+    public String getInvalidPriceErrorString();
+
+    public String getInvalidQuantityErrorString();
 }

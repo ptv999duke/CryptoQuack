@@ -7,6 +7,8 @@ import android.content.res.Resources;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 /**
  * Created by Duke on 2/15/2018.
  */
@@ -22,7 +24,10 @@ public class CryptoQuackApp extends Application {
         DaggerAppComponent.Builder b = DaggerAppComponent.builder();
         Context context = this.getApplicationContext();
         Resources r = this.getResources();
-        AppExternalModule appExternalModule = new AppExternalModule(this, context, r);
+        AppExternalModule appExternalModule = new AppExternalModule(this,
+                context,
+                r,
+                new Timber.DebugTree());
         b.appExternalModule(appExternalModule);
         this.appComponent = b.build();
         this.activityComponent = this.appComponent.addActivityComponent();

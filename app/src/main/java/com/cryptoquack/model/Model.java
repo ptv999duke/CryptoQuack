@@ -1,6 +1,5 @@
 package com.cryptoquack.model;
 
-import com.cryptoquack.model.IModel;
 import com.cryptoquack.model.credentials.AccessKeyCredentials;
 import com.cryptoquack.model.credentials.ICredentialsStore;
 import com.cryptoquack.model.currency.ExchangeMarket;
@@ -9,12 +8,14 @@ import com.cryptoquack.model.exchange.BaseExchange;
 import com.cryptoquack.model.exchange.ExchangeAction;
 import com.cryptoquack.model.exchange.Exchanges;
 import com.cryptoquack.model.exchange.Gemini.GeminiExchange;
+import com.cryptoquack.model.logger.ILogger;
 import com.cryptoquack.model.order.Order;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import io.reactivex.Single;
 
@@ -24,15 +25,25 @@ import io.reactivex.Single;
 
 public class Model implements IModel {
 
+    private final GeminiExchange geminiExchangeSandbox;
     private HashMap<Exchanges.Exchange, BaseExchange> exchangeMap;
     private final ICredentialsStore credentialsStore;
+    private GeminiExchange geminiExchange;
+    private ILogger logger;
 
     @Inject
-    public Model(ICredentialsStore credentialsStore) {
+    public Model(ICredentialsStore credentialsStore,
+                 @Named("real") GeminiExchange geminiExchange,
+                 @Named("sandbox") GeminiExchange geminiExchangeSandbox,
+                 ILogger logger) {
+        this.logger = logger;
         this.exchangeMap = new HashMap<>();
-        GeminiExchange geminiExchange = new GeminiExchange();
-        this.exchangeMap.put(Exchanges.Exchange.GEMINI, geminiExchange);
+        this.geminiExchange = geminiExchange;
+        this.geminiExchangeSandbox = geminiExchangeSandbox;
         this.credentialsStore = credentialsStore;
+
+        this.exchangeMap.put(this.geminiExchange.getExchangeType(), geminiExchange);
+        this.exchangeMap.put(this.geminiExchangeSandbox.getExchangeType(), geminiExchangeSandbox);
     }
 
     @Override

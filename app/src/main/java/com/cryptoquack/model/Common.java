@@ -11,6 +11,7 @@ public class Common {
     public static final Exchanges.Exchange[] exchanges = new Exchanges.Exchange[]{
             Exchanges.Exchange.BITTREX,
             Exchanges.Exchange.BINANCE,
-            Exchanges.Exchange.GEMINI
+            Exchanges.Exchange.GEMINI,
+            Exchanges.Exchange.GEMINI_SANDBOX
     };
 }

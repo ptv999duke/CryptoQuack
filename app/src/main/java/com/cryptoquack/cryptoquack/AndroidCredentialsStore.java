@@ -9,17 +9,24 @@ import android.security.keystore.KeyProperties;
 import android.support.annotation.RequiresApi;
 import android.util.Base64;
 
+import com.cryptoquack.exceptions.UnavailableExchangeException;
 import com.cryptoquack.model.credentials.AccessKeyCredentials;
 import com.cryptoquack.model.credentials.ICredentialsStore;
 import com.cryptoquack.model.exchange.Exchanges;
+import com.cryptoquack.model.logger.ILogger;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PublicKey;
+import java.security.UnrecoverableEntryException;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +34,7 @@ import java.util.HashMap;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
+import javax.crypto.NoSuchPaddingException;
 import javax.inject.Inject;
 
 /**
@@ -43,16 +51,15 @@ public class AndroidCredentialsStore implements ICredentialsStore {
     private HashMap<Exchanges.Exchange, String> accessKeyKeyMap;
     private HashMap<Exchanges.Exchange, String> secretKeyKeyMap;
     private final String credentialsPreferenceFileKey;
-
+    private ILogger logger;
 
     @Inject
-    public AndroidCredentialsStore(Context context) {
+    public AndroidCredentialsStore(Context context, ILogger logger) {
+        this.logger = logger;
         try {
             this.keyStore = KeyStore.getInstance(this.KEYSTORE_PROVIDER);
         } catch (KeyStoreException ex) {
-            int f = 4;
-            // Currently using android key store provider. This should not throw. Will need to
-            // handle errors better if user specified keystore providers are allowed.
+            this.logger.e(ex, "Error when instantiating AndroidCredentialsStore");
         }
 
         this.context = context;
@@ -64,6 +71,12 @@ public class AndroidCredentialsStore implements ICredentialsStore {
         this.secretKeyKeyMap.put(
                 Exchanges.Exchange.GEMINI,
                 this.context.getString(R.string.gemini_secret_key_key));
+        this.accessKeyKeyMap.put(
+                Exchanges.Exchange.GEMINI_SANDBOX,
+                this.context.getString(R.string.gemini_sandbox_access_key_key));
+        this.secretKeyKeyMap.put(
+                Exchanges.Exchange.GEMINI_SANDBOX,
+                this.context.getString(R.string.gemini_sandbox_secret_key_key));
         this.credentialsPreferenceFileKey = this.context.getString(
                 R.string.credentials_preference_file_key);
     }
@@ -71,11 +84,13 @@ public class AndroidCredentialsStore implements ICredentialsStore {
     public AndroidCredentialsStore(Context context,
                                    HashMap<Exchanges.Exchange, String> accessKeyKeyMap,
                                    HashMap<Exchanges.Exchange, String> secretKeyKeyMap,
-                                   String credentialsPreferenceFileKey) {
+                                   String credentialsPreferenceFileKey,
+                                   ILogger logger) {
         this.context = context;
         this.accessKeyKeyMap = accessKeyKeyMap;
         this.secretKeyKeyMap = secretKeyKeyMap;
         this.credentialsPreferenceFileKey = credentialsPreferenceFileKey;
+        this.logger = logger;
     }
 
     private String encryptData(String data) {
@@ -101,7 +116,9 @@ public class AndroidCredentialsStore implements ICredentialsStore {
             } else {
                 KeyStore.Entry entry = this.keyStore.getEntry(this.KEY_ALIAS, null);
                 if (!(entry instanceof KeyStore.PrivateKeyEntry)) {
-                    // TODO: Log and throw
+                    RuntimeException e = new RuntimeException("Error when getting private key while encrypting. Key entry is of wrong type");
+                    this.logger.e(e);
+                    throw e;
                 }
 
                 KeyStore.PrivateKeyEntry privateKey = (KeyStore.PrivateKeyEntry) entry;
@@ -120,11 +137,12 @@ public class AndroidCredentialsStore implements ICredentialsStore {
             String base64Encoded = Base64.encodeToString(encryptedBytes, Base64.NO_WRAP);
             return base64Encoded;
 
-        } catch (KeyStoreException  e) {
-            // TODO: Handle exceptions better
-            throw new RuntimeException();
-        } catch (Exception e) {
-            throw new RuntimeException();
+        } catch (java.io.IOException | NoSuchAlgorithmException | NoSuchPaddingException
+                | InvalidKeyException | InvalidAlgorithmParameterException
+                | java.security.cert.CertificateException | KeyStoreException
+                | NoSuchProviderException | UnrecoverableEntryException e) {
+            this.logger.e(e, "Error when encrypting key");
+            throw new RuntimeException(e);
         } finally {
             try {
                 if (cipherStream != null) {
@@ -148,7 +166,8 @@ public class AndroidCredentialsStore implements ICredentialsStore {
 
             KeyStore.Entry entry = this.keyStore.getEntry(this.KEY_ALIAS, null);
             if (!(entry instanceof KeyStore.PrivateKeyEntry)) {
-                // TODO: Log and throw
+                RuntimeException e = new RuntimeException("Error when getting private key while encrypting. Key entry is of wrong type");
+                throw e;
             }
 
             KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry) entry;
@@ -170,9 +189,11 @@ public class AndroidCredentialsStore implements ICredentialsStore {
 
             String decryptedData = new String(bytes, "UTF-8");
             return decryptedData;
-        } catch (Exception e) {
-            // TODO: better error handling
-            throw new RuntimeException();
+        } catch (java.io.IOException | NoSuchAlgorithmException | NoSuchPaddingException
+                | InvalidKeyException | java.security.cert.CertificateException | KeyStoreException
+                | UnrecoverableEntryException e) {
+            this.logger.e(e, "Error when decrypting key");
+            throw new RuntimeException(e);
         } finally {
             try {
                 if (cipherStream != null) {
@@ -185,15 +206,18 @@ public class AndroidCredentialsStore implements ICredentialsStore {
     public void saveAccessKeyCredentials(Exchanges.Exchange exchange,
                                          String accessKey,
                                          String secretKey) {
+        String accessKeyKey = this.accessKeyKeyMap.get(exchange);
+        String secretKeyKey = this.secretKeyKeyMap.get(exchange);
+        if (accessKeyKey == null || secretKeyKey == null) {
+            throw new UnavailableExchangeException(exchange, "Error when saving credentials");
+        }
+
         String encryptedAccessKey = this.encryptData(accessKey);
         String encryptedSecretKey = this.encryptData(secretKey);
         SharedPreferences pref = this.context.getSharedPreferences(
                 this.credentialsPreferenceFileKey,
                 Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
-        // TODO: Throw exception if the exchange is not supported.
-        String accessKeyKey = this.accessKeyKeyMap.get(exchange);
-        String secretKeyKey = this.secretKeyKeyMap.get(exchange);
         editor.putString(accessKeyKey, encryptedAccessKey);
         editor.putString(secretKeyKey, encryptedSecretKey);
         editor.commit();
@@ -204,8 +228,17 @@ public class AndroidCredentialsStore implements ICredentialsStore {
         SharedPreferences sharedPref = this.context.getSharedPreferences(
                 this.credentialsPreferenceFileKey,
                 Context.MODE_PRIVATE);
+        if (!this.accessKeyKeyMap.containsKey(exchange) ||
+                !this.secretKeyKeyMap.containsKey(exchange)) {
+            throw new UnavailableExchangeException(exchange, "Error when getting credentials");
+        }
+
         String accessKeyKey = this.accessKeyKeyMap.get(exchange);
         String secretKeyKey = this.secretKeyKeyMap.get(exchange);
+        if (accessKeyKey == null || secretKeyKey == null) {
+            return null;
+        }
+
         String encryptedAccessKey = sharedPref.getString(accessKeyKey, null);
         String encryptedSecretKey = sharedPref.getString(secretKeyKey, null);
         if ((encryptedAccessKey == null) || (encryptedSecretKey == null)) {

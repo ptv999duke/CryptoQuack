@@ -10,6 +10,6 @@ import com.cryptoquack.model.IModel;
 
 public interface ISettingsPresenter {
 
-    public void onCreate(ISettingsActivity view, IModel model, IResourceManager rm);
+    public void onCreate(ISettingsActivity view);
 
 }

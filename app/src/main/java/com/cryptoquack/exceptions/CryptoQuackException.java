@@ -14,7 +14,7 @@ public class CryptoQuackException extends RuntimeException {
         super(message);
     }
 
-    public CryptoQuackException(String message, Exception e) {
+    public CryptoQuackException(String message, Throwable e) {
         super(message, e);
     }
 }

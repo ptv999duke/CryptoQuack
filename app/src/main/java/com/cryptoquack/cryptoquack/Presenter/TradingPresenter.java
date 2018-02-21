@@ -4,6 +4,7 @@ import com.cryptoquack.cryptoquack.Presenter.Interfaces.ITradingPresenter;
 import com.cryptoquack.cryptoquack.ResourceManager.IResourceManager;
 import com.cryptoquack.cryptoquack.View.Interfaces.ITradingView;
 import com.cryptoquack.exceptions.CredentialsNotSetException;
+import com.cryptoquack.model.logger.ILogger;
 import com.cryptoquack.model.IModel;
 import com.cryptoquack.model.currency.Currencies;
 import com.cryptoquack.model.currency.ExchangeMarket;
@@ -30,6 +31,7 @@ import io.reactivex.observers.DisposableSingleObserver;
 
 public class TradingPresenter implements ITradingPresenter {
 
+    private final ILogger logger;
     private ITradingView view;
     private IModel model;
     private IResourceManager rm;
@@ -46,11 +48,13 @@ public class TradingPresenter implements ITradingPresenter {
     public TradingPresenter(@Named("UI_thread") Scheduler uiScheduler,
                             @Named("BG_thread") Scheduler bgScheduler,
                             IModel model,
-                            IResourceManager rm) {
+                            IResourceManager rm,
+                            ILogger logger) {
         this.uiScheduler = uiScheduler;
         this.bgScheduler = bgScheduler;
         this.rm = rm;
         this.model = model;
+        this.logger = logger;
     }
 
     @Override
@@ -104,7 +108,7 @@ public class TradingPresenter implements ITradingPresenter {
 
                     @Override
                     public void onError(@NonNull Throwable e) {
-                        int f = 3;
+                        logger.e(e, "Error when getting current price.");
                         // TODO: If error occurrs too many times in a row, display a warning/error.
                     }
                 };
@@ -126,25 +130,29 @@ public class TradingPresenter implements ITradingPresenter {
                                 ExchangeMarket market) {
         double price = 0.0;
         double quantity = 0.0;
+        boolean priceError = false;
         try {
             price = Double.parseDouble(priceString);
-            if (price < 0) {
-                // TODO: Show error string.
-                this.view.showError("");
-            }
+            priceError = price <= 0;
         } catch (NumberFormatException e) {
-            this.view.showError("");
+            priceError = true;
+        }
+
+        if (priceError){
+            this.view.showError(this.rm.getInvalidPriceErrorString());
             return;
         }
 
+        boolean quantityError = false;
         try {
             quantity = Double.parseDouble(quantityString);
-            if (quantity < 0) {
-                // TODO: Show error string.
-                this.view.showError("");
-            }
+            quantityError = quantity <= 0;
         } catch (NumberFormatException e) {
-            this.view.showError("");
+            quantityError = true;
+        }
+
+        if (quantityError) {
+            this.view.showError(this.rm.getInvalidQuantityErrorString());
             return;
         }
 
@@ -167,7 +175,7 @@ public class TradingPresenter implements ITradingPresenter {
 
             @Override
             public void onError(@NonNull Throwable e) {
-                int f= 3;
+                view.showError(rm.getUnknownErrorWhenPlacingOrderString());
             }
         };
 

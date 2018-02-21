@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">CryptoQuack</string>
     <string name="exchange_gemini_name">Gemini</string>
+    <string name="exchange_gemini_sandbox_name">Gemini Sandbox</string>
     <string name="exchange_bittrex_name">Bittrex</string>
     <string name="exchange_binance_name">Binance</string>
     <string name="exchanges_header">Exchanges</string>
@@ -37,4 +38,7 @@
     <string name="secret_key_indicator_label">Secret Key:</string>
     <string name="credentials_save_button_text">Save</string>
     <string name="credentials_not_set_error">Credentials not set for this exchange. Set it in the Settings menu.</string>
+    <string name="unknown_error_when_placing_order_message">Unknown error when placing order.</string>
+    <string name="invalid_price_error_string">Invalid price. Must be a valid positive number.</string>
+    <string name="invalid_quantity_error_string">Invalid quantity. Must be a valid positive number.</string>
 </resources>

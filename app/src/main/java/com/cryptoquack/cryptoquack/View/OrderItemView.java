@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.cryptoquack.cryptoquack.AndroidCredentialsStore;
+import com.cryptoquack.cryptoquack.CryptoQuackApp;
 import com.cryptoquack.cryptoquack.ResourceManager.AndroidResourceManager;
 import com.cryptoquack.cryptoquack.Presenter.Interfaces.IOrderItemPresenter;
 import com.cryptoquack.cryptoquack.Presenter.OrderItemPresenter;
@@ -15,6 +16,8 @@ import com.cryptoquack.cryptoquack.R;
 import com.cryptoquack.cryptoquack.View.Interfaces.IOrderItemView;
 import com.cryptoquack.model.Model;
 import com.cryptoquack.model.order.Order;
+
+import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
@@ -27,9 +30,10 @@ public class OrderItemView extends ConstraintLayout implements IOrderItemView {
     private TextView orderTimeTextView;
     private TextView orderTypeTextView;
     private TextView orderProgressTextView;
-
-    private IOrderItemPresenter presenter;
     private TextView orderSummaryTextview;
+
+    @Inject
+    public IOrderItemPresenter presenter;
 
     public OrderItemView(Context context) {
         this(context, null);
@@ -40,10 +44,8 @@ public class OrderItemView extends ConstraintLayout implements IOrderItemView {
     }
 
     public void init() {
-        this.presenter = new OrderItemPresenter(AndroidSchedulers.mainThread());
-        this.presenter.onCreate(this,
-                new Model(new AndroidCredentialsStore(this.getContext())),
-                new AndroidResourceManager(this.getResources()));
+        CryptoQuackApp.getActivityComponent().inject(this);
+        this.presenter.onCreate(this);
         LayoutInflater inflater = (LayoutInflater) this.getContext()
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.view_order_item, this, true);
