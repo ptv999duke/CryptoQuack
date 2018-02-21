@@ -107,6 +107,7 @@ public class GeminiExchange extends BaseExchange {
                         return Single.just((price));
                     }
                 });
+        single = single.onErrorResumeNext(this.<Double>getGenericErrorHandleResumeSingle());
         return single;
     }
 
@@ -171,31 +172,33 @@ public class GeminiExchange extends BaseExchange {
             }
         });
 
-        single = single.onErrorResumeNext(
-                new Function<Throwable, SingleSource<Order>>() {
-                    @Override
-                    public SingleSource<Order> apply(Throwable t) {
-                        if (t instanceof retrofit2.adapter.rxjava2.HttpException) {
-                            retrofit2.adapter.rxjava2.HttpException e =
-                                    (retrofit2.adapter.rxjava2.HttpException) t;
-                            if (e.code() == 429) {
-                                throw new ApiLimitException(exchangeType,
-                                        "Api limit hit when making order");
-                            }
-                        } else if (t instanceof HttpException) {
-                            HttpException e = (HttpException) t;
-                            if (e.code() == 429) {
-                                throw new ApiLimitException(exchangeType,
-                                        "Api limit hit when making order");
-                            }
-                        }
-
-                        throw new UnknownNetworkException(
-                                "Unexpected error when making order request",
-                                t);
-                    }
-                });
-
+        single = single.onErrorResumeNext(this.<Order>getGenericErrorHandleResumeSingle());
         return single;
+    }
+
+    private <T> Function<Throwable, SingleSource<T>> getGenericErrorHandleResumeSingle() {
+        return new Function<Throwable, SingleSource<T>>() {
+            @Override
+            public SingleSource<T> apply(Throwable t) {
+                if (t instanceof retrofit2.adapter.rxjava2.HttpException) {
+                    retrofit2.adapter.rxjava2.HttpException e =
+                            (retrofit2.adapter.rxjava2.HttpException) t;
+                    if (e.code() == 429) {
+                        throw new ApiLimitException(exchangeType,
+                                "Api limit hit when making order");
+                    }
+                } else if (t instanceof HttpException) {
+                    HttpException e = (HttpException) t;
+                    if (e.code() == 429) {
+                        throw new ApiLimitException(exchangeType,
+                                "Api limit hit when making order");
+                    }
+                }
+
+                throw new UnknownNetworkException(
+                        "Unexpected error when making order request",
+                        t);
+            }
+        };
     }
 }
