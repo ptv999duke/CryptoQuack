@@ -22,4 +22,6 @@ public interface GeminiApiClientV1 {
     @POST("/v1/order/new")
     public Single<GeminiOrder> newOrder(@Body GeminiNewOrderRequest newOrderRequest);
 
+    @POST("/v1/order/status")
+    public Single<GeminiOrder> getOrderStatus(@Body GeminiNewOrderRequest newOrderRequest);
 }

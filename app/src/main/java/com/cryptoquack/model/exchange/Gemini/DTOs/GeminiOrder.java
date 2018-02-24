@@ -7,6 +7,7 @@ import com.cryptoquack.model.exchange.Exchanges;
 import com.cryptoquack.model.exchange.Gemini.GeminiExchange;
 import com.cryptoquack.model.exchange.Gemini.GeminiHelper;
 import com.cryptoquack.model.order.Order;
+import com.cryptoquack.model.order.OrderStatus;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import java.util.Date;
@@ -75,23 +76,26 @@ public class GeminiOrder {
         double executedAmountDouble = Double.parseDouble(this.executedAmount);
         MonetaryAmount executedAmount = new MonetaryAmount(executedAmountDouble,
                 market.getSourceCurrency());
-        order.setAmountFulfilled(executedAmount);
+        OrderStatus orderStatus = new OrderStatus();
+        orderStatus.setAmountFulfilled(executedAmount);
         double remainingAmountDouble = Double.parseDouble(this.remainingAmount);
         MonetaryAmount remainingAmount = new MonetaryAmount(remainingAmountDouble,
                 market.getSourceCurrency());
-        order.setAmountRemaining(remainingAmount);
+        orderStatus.setAmountRemaining(remainingAmount);
+        orderStatus.setTotalAmount(totalAmount);
         if (this.isLive) {
             if (executedAmountDouble > 0.0) {
-                order.setOrderStatus(Order.OrderStatus.PARTIALLY_FILLED);
+                orderStatus.setStatus(OrderStatus.Status.PARTIALLY_FILLED);
             } else {
-                order.setOrderStatus(Order.OrderStatus.NEW);
+                orderStatus.setStatus(OrderStatus.Status.NEW);
             }
         } else if (this.isCancelled) {
-            order.setOrderStatus(Order.OrderStatus.CANCELLED);
+            orderStatus.setStatus(OrderStatus.Status.CANCELLED);
         } else {
-            order.setOrderStatus(Order.OrderStatus.FILLED);
+            orderStatus.setStatus(OrderStatus.Status.FILLED);
         }
 
+        order.setOrderStatus(orderStatus);
         order.setOrderType(Order.OrderType.LIMIT);
         Date orderDate = new Date(this.timestampmillis);
         order.setOrderTime(orderDate);

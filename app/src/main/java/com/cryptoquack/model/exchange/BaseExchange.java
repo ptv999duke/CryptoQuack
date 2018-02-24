@@ -9,6 +9,7 @@ import com.cryptoquack.model.credentials.ICredentials;
 import com.cryptoquack.model.currency.ExchangeMarket;
 import com.cryptoquack.model.currency.MonetaryAmount;
 import com.cryptoquack.model.order.Order;
+import com.cryptoquack.model.order.OrderStatus;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -62,4 +63,8 @@ public abstract class BaseExchange {
     public abstract Order makeOrder(Order orderRequest);
 
     public abstract Single<Order> makeOrderAsync(Order orderRequest);
+
+    public abstract OrderStatus getOrderStatus(Order order);
+
+    public abstract Single<OrderStatus> getOrderStatusAsync(Order order);
 }

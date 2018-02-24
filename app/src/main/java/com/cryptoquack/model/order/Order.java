@@ -13,13 +13,6 @@ import java.util.Date;
 
 public class Order {
 
-    public static enum OrderStatus {
-        NEW,
-        PARTIALLY_FILLED,
-        FILLED,
-        CANCELLED,
-    }
-
     public static enum OrderType {
         LIMIT,
         STOPLIMIT
@@ -32,8 +25,6 @@ public class Order {
     private MonetaryAmount totalAmount;
     private Exchanges.Exchange exchange;
     private double price;
-    private MonetaryAmount amountFulfilled;
-    private MonetaryAmount amountRemaining;
     private OrderStatus orderStatus;
     private Date orderTime;
     private MonetaryAmount fee;
@@ -129,18 +120,6 @@ public class Order {
 
     public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
-    }
-
-    public MonetaryAmount getAmountFulfilled() { return this.amountFulfilled; }
-
-    public void setAmountFulfilled(MonetaryAmount amount) {
-        this.amountFulfilled = amount;
-    }
-
-    public MonetaryAmount getAmountRemaining() { return this.amountRemaining; }
-
-    public void setAmountRemaining(MonetaryAmount amount) {
-        this.amountRemaining = amount;
     }
 
     public Date getOrderTime() {

@@ -7,6 +7,7 @@ import com.cryptoquack.model.logger.ILogger;
 import com.cryptoquack.model.IModel;
 import com.cryptoquack.model.currency.Currencies;
 import com.cryptoquack.model.order.Order;
+import com.cryptoquack.model.order.OrderStatus;
 
 import java.util.Date;
 
@@ -61,13 +62,13 @@ public class OrderItemPresenter implements IOrderItemPresenter {
                 this.order.getPrice(),
                 priceCurrency);
         this.view.setOrderSummaryTextview(orderSummaryString, true);
-        Order.OrderStatus orderStatus = order.getOrderStatus();
-        if (orderStatus == Order.OrderStatus.CANCELLED) {
+        OrderStatus orderStatus = order.getOrderStatus();
+        if (orderStatus.getStatus() == OrderStatus.Status.CANCELLED) {
             this.view.setOrderProgress(this.rm.getOrderCancelledStatusString(), true);
-        } else if (orderStatus == Order.OrderStatus.FILLED) {
+        } else if (orderStatus.getStatus() == OrderStatus.Status.FILLED) {
             this.view.setOrderProgress(this.rm.getOrderCompletedStatusString(), true);
         } else {
-            int percentFulfilled = (int)(100*this.order.getAmountFulfilled().getAmount() /
+            int percentFulfilled = (int)(100*orderStatus.getAmountFulfilled().getAmount() /
                     this.order.getTotalAmount().getAmount());
             String progressText = this.rm.getOrderFulfilledPercentageString(percentFulfilled);
             this.view.setOrderProgress(progressText, true);

@@ -16,6 +16,7 @@ import com.cryptoquack.model.exchange.Gemini.DTOs.GeminiNewOrderRequest;
 import com.cryptoquack.model.exchange.Gemini.DTOs.GeminiOrder;
 import com.cryptoquack.model.exchange.Gemini.DTOs.GeminiTicker;
 import com.cryptoquack.model.order.Order;
+import com.cryptoquack.model.order.OrderStatus;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
@@ -174,6 +175,18 @@ public class GeminiExchange extends BaseExchange {
 
         single = single.onErrorResumeNext(this.<Order>getGenericErrorHandleResumeSingle());
         return single;
+    }
+
+    @Override
+    public OrderStatus getOrderStatus(Order order) {
+        Single<OrderStatus> single = this.getOrderStatusAsync(order);
+        return single.blockingGet();
+    }
+
+    @Override
+    public Single<OrderStatus> getOrderStatusAsync(Order order) {
+        // TODO: Implement
+        return null;
     }
 
     private <T> Function<Throwable, SingleSource<T>> getGenericErrorHandleResumeSingle() {
