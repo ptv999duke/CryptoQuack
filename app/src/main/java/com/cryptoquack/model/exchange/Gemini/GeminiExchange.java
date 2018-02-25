@@ -5,6 +5,8 @@ import com.cryptoquack.exceptions.UnavailableActionException;
 import com.cryptoquack.exceptions.UnavailableMarketException;
 import com.cryptoquack.exceptions.UnavailableOrderTypeException;
 import com.cryptoquack.exceptions.UnknownNetworkException;
+import com.cryptoquack.model.exchange.Gemini.DTOs.GeminiOrderStatus;
+import com.cryptoquack.model.exchange.Gemini.DTOs.GeminiOrderStatusRequest;
 import com.cryptoquack.model.logger.ILogger;
 import com.cryptoquack.model.credentials.AccessKeyCredentials;
 import com.cryptoquack.model.currency.ExchangeMarket;
@@ -185,8 +187,19 @@ public class GeminiExchange extends BaseExchange {
 
     @Override
     public Single<OrderStatus> getOrderStatusAsync(Order order) {
-        // TODO: Implement
-        return null;
+        Single<GeminiOrderStatus> orderStatusCall = this.apiClient.getOrderStatus(
+                new GeminiOrderStatusRequest(order.getOrderId()));
+        Single<OrderStatus> single = orderStatusCall.flatMap(
+                new Function<GeminiOrderStatus, SingleSource<OrderStatus>>() {
+
+                    @Override
+                    public SingleSource<OrderStatus> apply(GeminiOrderStatus geminiOrderStatus) {
+                        OrderStatus orderStatus = geminiOrderStatus.convertToOrderStatus();
+                        return Single.just(orderStatus);
+                    }
+                });
+
+        return single;
     }
 
     private <T> Function<Throwable, SingleSource<T>> getGenericErrorHandleResumeSingle() {

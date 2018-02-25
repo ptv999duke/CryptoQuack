@@ -22,6 +22,20 @@ public class OrderStatus {
     private MonetaryAmount amountFulfilled;
     private MonetaryAmount amountRemaining;
 
+    public OrderStatus() {
+
+    }
+
+    public OrderStatus(Status status,
+                       MonetaryAmount totalAmount,
+                       MonetaryAmount amountFulfilled,
+                       MonetaryAmount amountRemaining) {
+        this.setTotalAmount(totalAmount);
+        this.setAmountFulfilled(amountFulfilled);
+        this.setAmountRemaining(amountRemaining);
+        this.setStatus(status);
+    }
+
     public OrderStatus.Status getStatus() {
         return this.status;
     }
