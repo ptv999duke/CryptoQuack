@@ -22,6 +22,7 @@ import com.cryptoquack.model.order.OrderStatus;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Date;
 
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
@@ -226,5 +227,59 @@ public class GeminiExchange extends BaseExchange {
                         t);
             }
         };
+    }
+
+    public Single<ArrayList<Order>> getOrdersAsync(ExchangeMarket market,
+                                                   final Date startTime,
+                                                   final Date endTime,
+                                                   boolean liveOnly) {
+        if (liveOnly) {
+            Single<ArrayList<GeminiOrder>> statusCall = this.apiClient.getActiveOrders();
+            Single<ArrayList<Order>> single = statusCall.flatMap(
+                    new Function<ArrayList<GeminiOrder>, SingleSource<ArrayList<Order>>>() {
+
+                        @Override
+                        public SingleSource<ArrayList<Order>> apply(ArrayList<GeminiOrder> orders) {
+                            ArrayList<Order> convertedOrders = new ArrayList<Order>();
+                            for (GeminiOrder geminiOrder : orders) {
+                                Order order = geminiOrder.convertToOrder();
+                                Date orderTime = order.getOrderTime();
+                                if ((orderTime.after(startTime) || orderTime.equals(startTime)) &&
+                                    (orderTime.before(endTime))){
+                                    convertedOrders.add(order);
+                                }
+                            }
+
+                            return Single.just(convertedOrders);
+                        }
+                    });
+            return single;
+        } else {
+            // TODO: Implement
+            return null;
+        }
+    }
+
+    public Single<ArrayList<Order>> getOrdersAsync(ExchangeMarket market, boolean liveOnly) {
+        if (liveOnly) {
+            Single<ArrayList<GeminiOrder>> statusCall = this.apiClient.getActiveOrders();
+            Single<ArrayList<Order>> single = statusCall.flatMap(
+                    new Function<ArrayList<GeminiOrder>, SingleSource<ArrayList<Order>>>() {
+
+                        @Override
+                        public SingleSource<ArrayList<Order>> apply(ArrayList<GeminiOrder> orders) {
+                            ArrayList<Order> convertedOrders = new ArrayList<Order>();
+                            for (GeminiOrder geminiOrder : orders) {
+                                convertedOrders.add(geminiOrder.convertToOrder());
+                            }
+
+                            return Single.just(convertedOrders);
+                        }
+                    });
+            return single;
+        } else {
+            // TODO: Implement
+            return null;
+        }
     }
 }

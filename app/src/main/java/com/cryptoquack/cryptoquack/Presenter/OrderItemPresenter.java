@@ -74,8 +74,4 @@ public class OrderItemPresenter implements IOrderItemPresenter {
             this.view.setOrderProgress(progressText, true);
         }
     }
-
-    public void onAdditionalActionClicked() {
-
-    }
 }
