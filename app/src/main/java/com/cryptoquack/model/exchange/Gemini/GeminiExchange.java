@@ -116,13 +116,6 @@ public class GeminiExchange extends BaseExchange {
     }
 
     @Override
-    public Double getCurrentPrice(ExchangeMarket market) throws UnavailableMarketException {
-        Single<Double> single = this.getCurrentPriceAsync(market);
-        Double price = single.blockingGet();
-        return price;
-    }
-
-    @Override
     public MonetaryAmount calculateFee(ExchangeAction.ExchangeActions action, MonetaryAmount amount,
                                           ExchangeMarket market) {
         return new MonetaryAmount(amount.getAmount() * 0.0025, market.getDestinationCurrency());
@@ -132,12 +125,6 @@ public class GeminiExchange extends BaseExchange {
     public ArrayList<ExchangeAction.ExchangeActions> getAvailableActions(
         ExchangeMarket market) {
         return (ArrayList<ExchangeAction.ExchangeActions>) this.availableActions.clone();
-    }
-
-    @Override
-    public Order makeOrder(Order orderRequest) {
-        Single<Order> single = this.makeOrderAsync(orderRequest);
-        return single.blockingGet();
     }
 
     @Override
@@ -178,12 +165,6 @@ public class GeminiExchange extends BaseExchange {
 
         single = single.onErrorResumeNext(this.<Order>getGenericErrorHandleResumeSingle());
         return single;
-    }
-
-    @Override
-    public OrderStatus getOrderStatus(Order order) {
-        Single<OrderStatus> single = this.getOrderStatusAsync(order);
-        return single.blockingGet();
     }
 
     @Override
@@ -244,33 +225,13 @@ public class GeminiExchange extends BaseExchange {
                             for (GeminiOrder geminiOrder : orders) {
                                 Order order = geminiOrder.convertToOrder();
                                 Date orderTime = order.getOrderTime();
-                                if ((orderTime.after(startTime) || orderTime.equals(startTime)) &&
-                                    (orderTime.before(endTime))){
+                                boolean afterStart = startTime == null || orderTime.after(startTime)
+                                        || orderTime.equals(startTime);
+                                boolean beforeEnd = endTime == null || orderTime.before(endTime) ||
+                                        orderTime.equals(endTime);
+                                if (afterStart && beforeEnd){
                                     convertedOrders.add(order);
                                 }
-                            }
-
-                            return Single.just(convertedOrders);
-                        }
-                    });
-            return single;
-        } else {
-            // TODO: Implement
-            return null;
-        }
-    }
-
-    public Single<ArrayList<Order>> getOrdersAsync(ExchangeMarket market, boolean liveOnly) {
-        if (liveOnly) {
-            Single<ArrayList<GeminiOrder>> statusCall = this.apiClient.getActiveOrders();
-            Single<ArrayList<Order>> single = statusCall.flatMap(
-                    new Function<ArrayList<GeminiOrder>, SingleSource<ArrayList<Order>>>() {
-
-                        @Override
-                        public SingleSource<ArrayList<Order>> apply(ArrayList<GeminiOrder> orders) {
-                            ArrayList<Order> convertedOrders = new ArrayList<Order>();
-                            for (GeminiOrder geminiOrder : orders) {
-                                convertedOrders.add(geminiOrder.convertToOrder());
                             }
 
                             return Single.just(convertedOrders);
