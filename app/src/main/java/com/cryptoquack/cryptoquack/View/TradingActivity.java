@@ -52,6 +52,7 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
     private Button newOrderButton;
     private TextView errorTextView;
     private RecyclerView ordersRecyclerView;
+    private OrderItemsRecyclerAdapter orderItemsAdapter;
 
     @Inject
     public BaseTradingPresenter presenter;
@@ -138,6 +139,7 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
         this.ordersRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         OrderItemsRecyclerAdapter adapter = new OrderItemsRecyclerAdapter(this.presenter, this);
         this.ordersRecyclerView.setAdapter(adapter);
+        this.orderItemsAdapter = adapter;
         this.presenter.onCreate(this, exchangeType);
     }
 
@@ -216,6 +218,10 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
         public void onNothingSelected(AdapterView<?> parent) {
             this.tradingActivity.presenter.onMarketChanged(null);
         }
+    }
+
+    public void refreshOpenOrdersData() {
+        this.orderItemsAdapter.notifyDataSetChanged();
     }
 
     @Override

@@ -45,6 +45,7 @@ public class TradingPresenter extends BaseTradingPresenter {
 
     private DisposableSingleObserver<Double> getCurrentPriceSubscription;
     private Timer getCurrentPriceTimer;
+    // List instead of linked list since index based access is likely required.
     private List<Order> pastOrders;
 
     private static final int MAX_ORDER_COUNT_TO_SHOW = 5;
@@ -141,6 +142,7 @@ public class TradingPresenter extends BaseTradingPresenter {
                 int subArrayEnd = Math.min(MAX_ORDER_COUNT_TO_SHOW, orders.size());
                 List<Order> subList = orders.subList(0, subArrayEnd);
                 pastOrders = subList;
+                view.refreshOpenOrdersData();
             }
 
             @Override
@@ -201,7 +203,31 @@ public class TradingPresenter extends BaseTradingPresenter {
 
             @Override
             public void onSuccess(@NonNull Order order) {
-                view.addOrderItem(order);
+                int indexToInsertAt = -1;
+                for (int i = 0; i < pastOrders.size(); i++) {
+                    Order pastOrder = pastOrders.get(i);
+                    if (order.getOrderTime().after(pastOrder.getOrderTime())) {
+                        indexToInsertAt = i;
+                        break;
+                    }
+                }
+
+                if (indexToInsertAt >= 0) {
+                    for (int i = pastOrders.size() - 1; i >= indexToInsertAt; i--) {
+                        int newIndex = i + 1;
+                        if (newIndex < MAX_ORDER_COUNT_TO_SHOW) {
+                            Order pastOrder = pastOrders.get(i);
+                            if (newIndex >= pastOrders.size()) {
+                                pastOrders.add(pastOrder);
+                            } else {
+                                pastOrders.set(newIndex, pastOrder);
+                            }
+                        }
+                    }
+
+                    pastOrders.set(indexToInsertAt, order);
+                    view.refreshOpenOrdersData();
+                }
             }
 
             @Override
