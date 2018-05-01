@@ -15,6 +15,7 @@ import com.cryptoquack.model.exchange.Exchanges;
 import com.cryptoquack.model.order.Order;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -139,9 +140,10 @@ public class TradingPresenter extends BaseTradingPresenter {
 
             @Override
             public void onSuccess(@NonNull ArrayList<Order> orders) {
-                int subArrayEnd = Math.min(MAX_ORDER_COUNT_TO_SHOW, orders.size());
-                List<Order> subList = orders.subList(0, subArrayEnd);
-                pastOrders = subList;
+                List<Order> merged = mergeSortedOrderLists(pastOrders,
+                        orders,
+                        MAX_ORDER_COUNT_TO_SHOW);
+                pastOrders = merged;
                 view.refreshOpenOrdersData();
             }
 
@@ -161,6 +163,7 @@ public class TradingPresenter extends BaseTradingPresenter {
                                 ExchangeAction.ExchangeActions action,
                                 Order.OrderType orderType,
                                 ExchangeMarket market) {
+        this.view.clearErrorText();
         double price = 0.0;
         double quantity = 0.0;
         boolean priceError = false;
@@ -203,31 +206,11 @@ public class TradingPresenter extends BaseTradingPresenter {
 
             @Override
             public void onSuccess(@NonNull Order order) {
-                int indexToInsertAt = -1;
-                for (int i = 0; i < pastOrders.size(); i++) {
-                    Order pastOrder = pastOrders.get(i);
-                    if (order.getOrderTime().after(pastOrder.getOrderTime())) {
-                        indexToInsertAt = i;
-                        break;
-                    }
-                }
-
-                if (indexToInsertAt >= 0) {
-                    for (int i = pastOrders.size() - 1; i >= indexToInsertAt; i--) {
-                        int newIndex = i + 1;
-                        if (newIndex < MAX_ORDER_COUNT_TO_SHOW) {
-                            Order pastOrder = pastOrders.get(i);
-                            if (newIndex >= pastOrders.size()) {
-                                pastOrders.add(pastOrder);
-                            } else {
-                                pastOrders.set(newIndex, pastOrder);
-                            }
-                        }
-                    }
-
-                    pastOrders.set(indexToInsertAt, order);
-                    view.refreshOpenOrdersData();
-                }
+                ArrayList<Order> temp = new ArrayList<Order>();
+                temp.add(order);
+                List<Order> merged = mergeSortedOrderLists(pastOrders, temp, MAX_ORDER_COUNT_TO_SHOW);
+                pastOrders = merged;
+                view.refreshOpenOrdersData();
             }
 
             @Override
@@ -239,6 +222,50 @@ public class TradingPresenter extends BaseTradingPresenter {
         single.subscribeOn(bgScheduler)
                 .observeOn(uiScheduler)
                 .subscribe(subscription);
+    }
+
+    private List<Order> mergeSortedOrderLists(List<Order> orders1, List<Order> orders2, int maxCount) {
+        ArrayList<Order> mergedList = new ArrayList<>();
+        int orders1Index = 0;
+        int orders2Index = 0;
+        int orders1Size = 0;
+        int orders2Size = 0;
+        if (orders1 != null) {
+            orders1Size = orders1.size();
+        }
+
+        if (orders2 != null) {
+            orders2Size = orders2.size();
+        }
+
+        if (maxCount < 0) {
+            maxCount = orders1Size + orders2Size;
+        }
+
+        while ((orders1Index < orders1Size) && (orders2Index < orders2Size) &&
+                (mergedList.size() < maxCount)) {
+            Order order1 = orders1.get(orders1Index);
+            Order order2 = orders2.get(orders2Index);
+            Date order1Date = order1.getOrderTime();
+            Date order2Date = order2.getOrderTime();
+            if (order2Date.after(order1Date) || order2Date.equals(order1Date)) {
+                mergedList.add(order2);
+                orders2Index++;
+            } else {
+                mergedList.add(order1);
+                orders1Index++;
+            }
+        }
+
+        if (mergedList.size() < maxCount) {
+            if (orders1Index < orders1Size) {
+                mergedList.addAll(orders1.subList(orders1Index, orders1Size));
+            } else if (orders2Index < orders2Size) {
+                mergedList.addAll(orders2.subList(orders2Index, orders2Size));
+            }
+        }
+
+        return mergedList;
     }
 
     @Override
