@@ -99,6 +99,10 @@ public class GeminiApiRequestInterceptor implements Interceptor {
     }
 
     private String addNecessaryFields(String bodyString, String relativeUrl) throws JSONException {
+        if (bodyString == null || bodyString.isEmpty()) {
+            bodyString = "{}";
+        }
+
         JSONObject jsonObj = new JSONObject(bodyString);
         if (!jsonObj.has(this.NONCE_KEY)) {
             long epochTime = System.currentTimeMillis();

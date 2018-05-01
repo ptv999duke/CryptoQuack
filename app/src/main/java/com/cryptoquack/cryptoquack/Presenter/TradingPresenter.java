@@ -1,5 +1,6 @@
 package com.cryptoquack.cryptoquack.Presenter;
 
+import com.cryptoquack.cryptoquack.Presenter.Interfaces.IOrderListPresenter;
 import com.cryptoquack.cryptoquack.Presenter.Interfaces.ITradingPresenter;
 import com.cryptoquack.cryptoquack.ResourceManager.IResourceManager;
 import com.cryptoquack.cryptoquack.View.Interfaces.ITradingView;
@@ -14,6 +15,7 @@ import com.cryptoquack.model.exchange.Exchanges;
 import com.cryptoquack.model.order.Order;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -29,7 +31,7 @@ import io.reactivex.observers.DisposableSingleObserver;
  * Created by Duke on 1/28/2018.
  */
 
-public class TradingPresenter implements ITradingPresenter {
+public class TradingPresenter extends BaseTradingPresenter {
 
     private final ILogger logger;
     private ITradingView view;
@@ -43,6 +45,9 @@ public class TradingPresenter implements ITradingPresenter {
 
     private DisposableSingleObserver<Double> getCurrentPriceSubscription;
     private Timer getCurrentPriceTimer;
+    private List<Order> pastOrders;
+
+    private static final int MAX_ORDER_COUNT_TO_SHOW = 5;
 
     @Inject
     public TradingPresenter(@Named("UI_thread") Scheduler uiScheduler,
@@ -87,10 +92,12 @@ public class TradingPresenter implements ITradingPresenter {
             this.view.setAvailableActions(availableActions);
             this.view.updateCurrentPrice(this.rm.getPriceLoadingString());
             this.registerCurrentPriceGetter(this.exchange, market);
+            this.registerCurrentOpenOrdersGetter(this.exchange, market);
         }
     }
 
-    private void registerCurrentPriceGetter(final Exchanges.Exchange exchange, final ExchangeMarket market) {
+    private void registerCurrentPriceGetter(final Exchanges.Exchange exchange,
+                                            final ExchangeMarket market) {
         this.getCurrentPriceTimer = new Timer();
         TimerTask doAsynchronousTask = new TimerTask() {
 
@@ -121,6 +128,30 @@ public class TradingPresenter implements ITradingPresenter {
         };
 
         this.getCurrentPriceTimer.schedule(doAsynchronousTask, 0, 2500);
+    }
+
+    private void registerCurrentOpenOrdersGetter(final Exchanges.Exchange exchange,
+                                                final ExchangeMarket market) {
+        Single<ArrayList<Order>> single = this.model.getOrdersAsync(exchange, market, true);
+        DisposableSingleObserver<ArrayList<Order>> subscription =
+                new DisposableSingleObserver<ArrayList<Order>>() {
+
+            @Override
+            public void onSuccess(@NonNull ArrayList<Order> orders) {
+                int subArrayEnd = Math.min(MAX_ORDER_COUNT_TO_SHOW, orders.size());
+                List<Order> subList = orders.subList(0, subArrayEnd);
+                pastOrders = subList;
+            }
+
+            @Override
+            public void onError(@NonNull Throwable e) {
+                view.showError(rm.getUnknownErrorWhenPlacingOrderString());
+            }
+        };
+
+        single.subscribeOn(this.bgScheduler)
+                .observeOn(this.uiScheduler)
+                .subscribe(subscription);
     }
 
     @Override
@@ -234,5 +265,23 @@ public class TradingPresenter implements ITradingPresenter {
     public void onOrderQuantityEntered(ExchangeMarket market, ExchangeAction.ExchangeActions action,
                                        String amount, String price) {
         this.onOrderPriceEntered(market, action, amount, price);
+    }
+
+    @Override
+    public int getOrdersCount() {
+        if (this.pastOrders == null) {
+            return 0;
+        }
+
+        return this.pastOrders.size();
+    }
+
+    @Override
+    public Order getOrderAtPosition(int position) {
+        if (this.pastOrders == null) {
+            return null;
+        }
+
+        return this.pastOrders.get(position);
     }
 }

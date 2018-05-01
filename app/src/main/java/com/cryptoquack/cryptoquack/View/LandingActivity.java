@@ -27,13 +27,13 @@ public class LandingActivity extends CryptoQuackActivity {
         this.mainSelectionListView.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 0) {
-                    Intent intent = new Intent(thisReference, ExchangesActivity.class);
-                    startActivity(intent);
-                } else if (position == 1) {
-                    Intent intent = new Intent(thisReference, SettingsActivity.class);
-                    startActivity(intent);
-                }
+            if (position == 0) {
+                Intent intent = new Intent(thisReference, ExchangesActivity.class);
+                startActivity(intent);
+            } else if (position == 1) {
+                Intent intent = new Intent(thisReference, SettingsActivity.class);
+                startActivity(intent);
+            }
             }
         });
     }

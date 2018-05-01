@@ -2,17 +2,20 @@ package com.cryptoquack.cryptoquack.View;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.cryptoquack.cryptoquack.CryptoQuackApp;
+import com.cryptoquack.cryptoquack.Presenter.BaseTradingPresenter;
 import com.cryptoquack.cryptoquack.Presenter.Interfaces.ITradingPresenter;
+import com.cryptoquack.cryptoquack.Presenter.TradingPresenter;
 import com.cryptoquack.cryptoquack.R;
 import com.cryptoquack.cryptoquack.View.Interfaces.ITradingView;
 import com.cryptoquack.model.logger.ILogger;
@@ -47,11 +50,11 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
     private TableRow totalRow;
     private TextView totalTextView;
     private Button newOrderButton;
-    private LinearLayout ordersLayout;
     private TextView errorTextView;
+    private RecyclerView ordersRecyclerView;
 
     @Inject
-    public ITradingPresenter presenter;
+    public BaseTradingPresenter presenter;
 
     @Inject
     public ILogger logger;
@@ -87,8 +90,8 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
         this.totalRow = (TableRow) findViewById(R.id.total_price_row);
         this.totalTextView = (TextView) findViewById(R.id.total_price_text_view);
         this.newOrderButton = (Button) findViewById(R.id.new_order_button);
-        this.ordersLayout = (LinearLayout) findViewById(R.id.orders_layout);
         this.errorTextView = (TextView) findViewById(R.id.error_text_view);
+        this.ordersRecyclerView = (RecyclerView) findViewById(R.id.active_order_recycler_view);
 
         this.orderPriceEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -132,6 +135,9 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
             }
         });
 
+        this.ordersRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        OrderItemsRecyclerAdapter adapter = new OrderItemsRecyclerAdapter(this.presenter, this);
+        this.ordersRecyclerView.setAdapter(adapter);
         this.presenter.onCreate(this, exchangeType);
     }
 
@@ -215,8 +221,8 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
     @Override
     public void addOrderItem(Order order) {
         OrderItemView item = new OrderItemView(this);
-        item.init();
+        item.Init();
         item.setOrder(order);
-        this.ordersLayout.addView(item);
+        // this.ordersLayout.addView(item);
     }
 }

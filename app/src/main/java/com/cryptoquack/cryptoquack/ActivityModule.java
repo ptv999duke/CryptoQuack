@@ -1,5 +1,6 @@
 package com.cryptoquack.cryptoquack;
 
+import com.cryptoquack.cryptoquack.Presenter.BaseTradingPresenter;
 import com.cryptoquack.cryptoquack.Presenter.CredentialsPresenter;
 import com.cryptoquack.cryptoquack.Presenter.Interfaces.ICredentialsPresenter;
 import com.cryptoquack.cryptoquack.Presenter.Interfaces.IOrderItemPresenter;
@@ -28,7 +29,7 @@ import dagger.Module;
 public abstract class ActivityModule {
 
     @Binds
-    public abstract ITradingPresenter providesTradingPresenter(TradingPresenter tradingPresenter);
+    public abstract BaseTradingPresenter providesTradingPresenter(TradingPresenter tradingPresenter);
 
     @Binds
     public abstract ISettingsPresenter providesSettingsPresenter(

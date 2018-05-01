@@ -12,6 +12,7 @@ import com.cryptoquack.model.logger.ILogger;
 import com.cryptoquack.model.order.Order;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import javax.inject.Inject;
@@ -58,7 +59,8 @@ public class Model implements IModel {
 
     @Override
     public Single<Double> getCurrentPriceAsync(Exchanges.Exchange exchange, ExchangeMarket market) {
-        return this.exchangeMap.get(exchange).getCurrentPriceAsync(market);
+        BaseExchange exchangeModel = this.exchangeMap.get(exchange);
+        return exchangeModel.getCurrentPriceAsync(market);
     }
 
     @Override
@@ -107,5 +109,21 @@ public class Model implements IModel {
     @Override
     public Order makeOrder(Exchanges.Exchange exchange, Order orderRequest) {
         return this.exchangeMap.get(exchange).makeOrder(orderRequest);
+    }
+
+    @Override
+    public Single<ArrayList<Order>> getOrdersAsync(Exchanges.Exchange exchange,
+                                                   ExchangeMarket market,
+                                                   final Date startTime,
+                                                   final Date endTime,
+                                                   boolean liveOnly) {
+        return this.exchangeMap.get(exchange).getOrdersAsync(market, startTime, endTime, liveOnly);
+    }
+
+
+    public Single<ArrayList<Order>> getOrdersAsync(Exchanges.Exchange exchange,
+                                                   ExchangeMarket market,
+                                                   boolean liveOnly) {
+        return this.exchangeMap.get(exchange).getOrdersAsync(market, liveOnly);
     }
 }

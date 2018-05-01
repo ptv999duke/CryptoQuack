@@ -43,7 +43,7 @@ public class OrderItemView extends ConstraintLayout implements IOrderItemView {
         super(context, attrs);
     }
 
-    public void init() {
+    public void Init() {
         CryptoQuackApp.getActivityComponent().inject(this);
         this.presenter.onCreate(this);
         LayoutInflater inflater = (LayoutInflater) this.getContext()
