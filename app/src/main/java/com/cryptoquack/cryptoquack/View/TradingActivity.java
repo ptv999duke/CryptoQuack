@@ -225,10 +225,7 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
     }
 
     @Override
-    public void addOrderItem(Order order) {
-        OrderItemView item = new OrderItemView(this);
-        item.Init();
-        item.setOrder(order);
-        // this.ordersLayout.addView(item);
+    public void goToFullOrderItemActivity(Order order) {
+
     }
 }

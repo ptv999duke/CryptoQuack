@@ -337,4 +337,10 @@ public class TradingPresenter extends BaseTradingPresenter {
 
         return this.pastOrders.get(position);
     }
+
+    @Override
+    public void onOrderClick(int position) {
+        Order order = this.getOrderAtPosition(position);
+        this.view.goToFullOrderItemActivity(order);
+    }
 }

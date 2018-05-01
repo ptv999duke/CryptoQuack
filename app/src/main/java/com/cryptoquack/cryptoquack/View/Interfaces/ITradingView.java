@@ -30,7 +30,7 @@ public interface ITradingView {
 
     public void showError(String message);
 
-    public void addOrderItem(Order order);
-
     public void refreshOpenOrdersData();
+
+    public void goToFullOrderItemActivity(Order order);
 }

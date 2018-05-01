@@ -11,4 +11,6 @@ public interface IOrderListPresenter {
     public int getOrdersCount();
 
     public Order getOrderAtPosition(int position);
+
+    public void onOrderClick(int position);
 }

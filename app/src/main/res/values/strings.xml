@@ -41,4 +41,5 @@
     <string name="unknown_error_when_placing_order_message">Unknown error when placing order.</string>
     <string name="invalid_price_error_string">Invalid price. Must be a valid positive number.</string>
     <string name="invalid_quantity_error_string">Invalid quantity. Must be a valid positive number.</string>
+    <string name="order_item_header">Order</string>
 </resources>

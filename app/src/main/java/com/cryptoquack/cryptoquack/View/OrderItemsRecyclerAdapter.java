@@ -3,6 +3,7 @@ package com.cryptoquack.cryptoquack.View;
 import android.content.Context;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
@@ -18,10 +19,15 @@ public class OrderItemsRecyclerAdapter extends
 
     private final IOrderListPresenter presenter;
     private Context context;
+    private OrderItemClickListener callBack;
 
     public OrderItemsRecyclerAdapter(IOrderListPresenter presenter, Context context) {
         this.context = context;
         this.presenter = presenter;
+    }
+
+    public interface OrderItemClickListener {
+        public abstract void onOrderItemClick(Order order);
     }
 
     @Override
@@ -36,9 +42,16 @@ public class OrderItemsRecyclerAdapter extends
     }
 
     @Override
-    public void onBindViewHolder(OrderItemViewHolder holder, int position) {
+    public void onBindViewHolder(OrderItemViewHolder holder, final int position) {
         Order order = this.presenter.getOrderAtPosition(position);
         holder.orderItemView.setOrder(order);
+        holder.orderItemView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                presenter.onOrderClick(position);
+            }
+        });
     }
 
     @Override
