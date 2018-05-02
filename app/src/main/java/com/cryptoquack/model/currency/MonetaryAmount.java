@@ -2,6 +2,8 @@ package com.cryptoquack.model.currency;
 
 import android.support.annotation.NonNull;
 
+import java.math.BigDecimal;
+
 /**
  * Created by Duke on 1/24/2018.
  */
@@ -49,11 +51,12 @@ public class MonetaryAmount implements Comparable<MonetaryAmount> {
 
     @Override
     public String toString() {
-
         if (this.currency == Currencies.Currency.USD) {
-            return String.format("$%f", this.amount);
+            return String.format("$%.2f", this.amount);
         } else {
-            return String.format("%f %s", this.amount, this.currency);
+            BigDecimal dec = new BigDecimal(this.amount);
+            dec.stripTrailingZeros();
+            return String.format("%s %s", dec.toString(), this.currency);
         }
     }
 

@@ -8,6 +8,7 @@ import com.cryptoquack.model.exchange.Exchanges;
 import com.cryptoquack.model.order.Order;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import io.reactivex.Single;
 
@@ -41,4 +42,14 @@ public interface IModel {
                                                 String accessKey,
                                                 String secretKey,
                                                 boolean temporary);
+
+    public Single<ArrayList<Order>> getOrdersAsync(Exchanges.Exchange exchange,
+                                                   ExchangeMarket market,
+                                                   final Date startTime,
+                                                   final Date endTime,
+                                                   boolean liveOnly);
+
+    public Single<ArrayList<Order>> getOrdersAsync(Exchanges.Exchange exchange,
+                                                   ExchangeMarket market,
+                                                   boolean liveOnly);
 }

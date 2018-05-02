@@ -14,6 +14,4 @@ public interface IOrderItemPresenter {
     public void onCreate(IOrderItemView view);
 
     public void setOrder(Order order);
-
-    public void onAdditionalActionClicked();
 }

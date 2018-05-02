@@ -5,6 +5,8 @@ import com.cryptoquack.exceptions.UnavailableActionException;
 import com.cryptoquack.exceptions.UnavailableMarketException;
 import com.cryptoquack.exceptions.UnavailableOrderTypeException;
 import com.cryptoquack.exceptions.UnknownNetworkException;
+import com.cryptoquack.model.exchange.Gemini.DTOs.GeminiOrderStatus;
+import com.cryptoquack.model.exchange.Gemini.DTOs.GeminiOrderStatusRequest;
 import com.cryptoquack.model.logger.ILogger;
 import com.cryptoquack.model.credentials.AccessKeyCredentials;
 import com.cryptoquack.model.currency.ExchangeMarket;
@@ -16,9 +18,11 @@ import com.cryptoquack.model.exchange.Gemini.DTOs.GeminiNewOrderRequest;
 import com.cryptoquack.model.exchange.Gemini.DTOs.GeminiOrder;
 import com.cryptoquack.model.exchange.Gemini.DTOs.GeminiTicker;
 import com.cryptoquack.model.order.Order;
+import com.cryptoquack.model.order.OrderStatus;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Date;
 
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
@@ -112,13 +116,6 @@ public class GeminiExchange extends BaseExchange {
     }
 
     @Override
-    public Double getCurrentPrice(ExchangeMarket market) throws UnavailableMarketException {
-        Single<Double> single = this.getCurrentPriceAsync(market);
-        Double price = single.blockingGet();
-        return price;
-    }
-
-    @Override
     public MonetaryAmount calculateFee(ExchangeAction.ExchangeActions action, MonetaryAmount amount,
                                           ExchangeMarket market) {
         return new MonetaryAmount(amount.getAmount() * 0.0025, market.getDestinationCurrency());
@@ -128,12 +125,6 @@ public class GeminiExchange extends BaseExchange {
     public ArrayList<ExchangeAction.ExchangeActions> getAvailableActions(
         ExchangeMarket market) {
         return (ArrayList<ExchangeAction.ExchangeActions>) this.availableActions.clone();
-    }
-
-    @Override
-    public Order makeOrder(Order orderRequest) {
-        Single<Order> single = this.makeOrderAsync(orderRequest);
-        return single.blockingGet();
     }
 
     @Override
@@ -176,6 +167,23 @@ public class GeminiExchange extends BaseExchange {
         return single;
     }
 
+    @Override
+    public Single<OrderStatus> getOrderStatusAsync(Order order) {
+        Single<GeminiOrderStatus> orderStatusCall = this.apiClient.getOrderStatus(
+                new GeminiOrderStatusRequest(order.getOrderId()));
+        Single<OrderStatus> single = orderStatusCall.flatMap(
+                new Function<GeminiOrderStatus, SingleSource<OrderStatus>>() {
+
+                    @Override
+                    public SingleSource<OrderStatus> apply(GeminiOrderStatus geminiOrderStatus) {
+                        OrderStatus orderStatus = geminiOrderStatus.convertToOrderStatus();
+                        return Single.just(orderStatus);
+                    }
+                });
+
+        return single;
+    }
+
     private <T> Function<Throwable, SingleSource<T>> getGenericErrorHandleResumeSingle() {
         return new Function<Throwable, SingleSource<T>>() {
             @Override
@@ -200,5 +208,39 @@ public class GeminiExchange extends BaseExchange {
                         t);
             }
         };
+    }
+
+    public Single<ArrayList<Order>> getOrdersAsync(ExchangeMarket market,
+                                                   final Date startTime,
+                                                   final Date endTime,
+                                                   boolean liveOnly) {
+        if (liveOnly) {
+            Single<ArrayList<GeminiOrder>> statusCall = this.apiClient.getActiveOrders();
+            Single<ArrayList<Order>> single = statusCall.flatMap(
+                    new Function<ArrayList<GeminiOrder>, SingleSource<ArrayList<Order>>>() {
+
+                        @Override
+                        public SingleSource<ArrayList<Order>> apply(ArrayList<GeminiOrder> orders) {
+                            ArrayList<Order> convertedOrders = new ArrayList<Order>();
+                            for (GeminiOrder geminiOrder : orders) {
+                                Order order = geminiOrder.convertToOrder();
+                                Date orderTime = order.getOrderTime();
+                                boolean afterStart = startTime == null || orderTime.after(startTime)
+                                        || orderTime.equals(startTime);
+                                boolean beforeEnd = endTime == null || orderTime.before(endTime) ||
+                                        orderTime.equals(endTime);
+                                if (afterStart && beforeEnd){
+                                    convertedOrders.add(order);
+                                }
+                            }
+
+                            return Single.just(convertedOrders);
+                        }
+                    });
+            return single;
+        } else {
+            // TODO: Implement
+            return null;
+        }
     }
 }

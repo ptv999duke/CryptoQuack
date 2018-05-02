@@ -2,7 +2,12 @@ package com.cryptoquack.model.exchange.Gemini;
 
 import com.cryptoquack.model.exchange.Gemini.DTOs.GeminiNewOrderRequest;
 import com.cryptoquack.model.exchange.Gemini.DTOs.GeminiOrder;
+import com.cryptoquack.model.exchange.Gemini.DTOs.GeminiOrderStatus;
+import com.cryptoquack.model.exchange.Gemini.DTOs.GeminiOrderStatusRequest;
 import com.cryptoquack.model.exchange.Gemini.DTOs.GeminiTicker;
+import com.cryptoquack.model.order.OrderStatus;
+
+import java.util.ArrayList;
 
 import io.reactivex.Single;
 import retrofit2.http.Body;
@@ -22,4 +27,12 @@ public interface GeminiApiClientV1 {
     @POST("/v1/order/new")
     public Single<GeminiOrder> newOrder(@Body GeminiNewOrderRequest newOrderRequest);
 
+    @POST("/v1/order/status")
+    public Single<GeminiOrderStatus> getOrderStatus(@Body GeminiOrderStatusRequest newOrderRequest);
+
+    @POST("/v1/orders")
+    public Single<ArrayList<GeminiOrder>> getActiveOrders();
+
+    @POST("/v1/mytrades")
+    public Single<ArrayList<GeminiOrder>> getOrders();
 }

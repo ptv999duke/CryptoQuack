@@ -1,5 +1,6 @@
 package com.cryptoquack.cryptoquack.Presenter;
 
+import com.cryptoquack.cryptoquack.Presenter.Interfaces.IOrderListPresenter;
 import com.cryptoquack.cryptoquack.Presenter.Interfaces.ITradingPresenter;
 import com.cryptoquack.cryptoquack.ResourceManager.IResourceManager;
 import com.cryptoquack.cryptoquack.View.Interfaces.ITradingView;
@@ -14,6 +15,8 @@ import com.cryptoquack.model.exchange.Exchanges;
 import com.cryptoquack.model.order.Order;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -29,7 +32,7 @@ import io.reactivex.observers.DisposableSingleObserver;
  * Created by Duke on 1/28/2018.
  */
 
-public class TradingPresenter implements ITradingPresenter {
+public class TradingPresenter extends BaseTradingPresenter {
 
     private final ILogger logger;
     private ITradingView view;
@@ -43,6 +46,10 @@ public class TradingPresenter implements ITradingPresenter {
 
     private DisposableSingleObserver<Double> getCurrentPriceSubscription;
     private Timer getCurrentPriceTimer;
+    // List instead of linked list since index based access is likely required.
+    private List<Order> pastOrders;
+
+    private static final int MAX_ORDER_COUNT_TO_SHOW = 5;
 
     @Inject
     public TradingPresenter(@Named("UI_thread") Scheduler uiScheduler,
@@ -87,10 +94,12 @@ public class TradingPresenter implements ITradingPresenter {
             this.view.setAvailableActions(availableActions);
             this.view.updateCurrentPrice(this.rm.getPriceLoadingString());
             this.registerCurrentPriceGetter(this.exchange, market);
+            this.registerCurrentOpenOrdersGetter(this.exchange, market);
         }
     }
 
-    private void registerCurrentPriceGetter(final Exchanges.Exchange exchange, final ExchangeMarket market) {
+    private void registerCurrentPriceGetter(final Exchanges.Exchange exchange,
+                                            final ExchangeMarket market) {
         this.getCurrentPriceTimer = new Timer();
         TimerTask doAsynchronousTask = new TimerTask() {
 
@@ -123,11 +132,38 @@ public class TradingPresenter implements ITradingPresenter {
         this.getCurrentPriceTimer.schedule(doAsynchronousTask, 0, 2500);
     }
 
+    private void registerCurrentOpenOrdersGetter(final Exchanges.Exchange exchange,
+                                                final ExchangeMarket market) {
+        Single<ArrayList<Order>> single = this.model.getOrdersAsync(exchange, market, true);
+        DisposableSingleObserver<ArrayList<Order>> subscription =
+                new DisposableSingleObserver<ArrayList<Order>>() {
+
+            @Override
+            public void onSuccess(@NonNull ArrayList<Order> orders) {
+                List<Order> merged = mergeSortedOrderLists(pastOrders,
+                        orders,
+                        MAX_ORDER_COUNT_TO_SHOW);
+                pastOrders = merged;
+                view.refreshOpenOrdersData();
+            }
+
+            @Override
+            public void onError(@NonNull Throwable e) {
+                view.showError(rm.getUnknownErrorWhenPlacingOrderString());
+            }
+        };
+
+        single.subscribeOn(this.bgScheduler)
+                .observeOn(this.uiScheduler)
+                .subscribe(subscription);
+    }
+
     @Override
     public void onNewOrderClick(String priceString, String quantityString,
                                 ExchangeAction.ExchangeActions action,
                                 Order.OrderType orderType,
                                 ExchangeMarket market) {
+        this.view.clearErrorText();
         double price = 0.0;
         double quantity = 0.0;
         boolean priceError = false;
@@ -170,7 +206,11 @@ public class TradingPresenter implements ITradingPresenter {
 
             @Override
             public void onSuccess(@NonNull Order order) {
-                view.addOrderItem(order);
+                ArrayList<Order> temp = new ArrayList<Order>();
+                temp.add(order);
+                List<Order> merged = mergeSortedOrderLists(pastOrders, temp, MAX_ORDER_COUNT_TO_SHOW);
+                pastOrders = merged;
+                view.refreshOpenOrdersData();
             }
 
             @Override
@@ -182,6 +222,50 @@ public class TradingPresenter implements ITradingPresenter {
         single.subscribeOn(bgScheduler)
                 .observeOn(uiScheduler)
                 .subscribe(subscription);
+    }
+
+    private List<Order> mergeSortedOrderLists(List<Order> orders1, List<Order> orders2, int maxCount) {
+        ArrayList<Order> mergedList = new ArrayList<>();
+        int orders1Index = 0;
+        int orders2Index = 0;
+        int orders1Size = 0;
+        int orders2Size = 0;
+        if (orders1 != null) {
+            orders1Size = orders1.size();
+        }
+
+        if (orders2 != null) {
+            orders2Size = orders2.size();
+        }
+
+        if (maxCount < 0) {
+            maxCount = orders1Size + orders2Size;
+        }
+
+        while ((orders1Index < orders1Size) && (orders2Index < orders2Size) &&
+                (mergedList.size() < maxCount)) {
+            Order order1 = orders1.get(orders1Index);
+            Order order2 = orders2.get(orders2Index);
+            Date order1Date = order1.getOrderTime();
+            Date order2Date = order2.getOrderTime();
+            if (order2Date.after(order1Date) || order2Date.equals(order1Date)) {
+                mergedList.add(order2);
+                orders2Index++;
+            } else {
+                mergedList.add(order1);
+                orders1Index++;
+            }
+        }
+
+        if (mergedList.size() < maxCount) {
+            if (orders1Index < orders1Size) {
+                mergedList.addAll(orders1.subList(orders1Index, orders1Size));
+            } else if (orders2Index < orders2Size) {
+                mergedList.addAll(orders2.subList(orders2Index, orders2Size));
+            }
+        }
+
+        return mergedList;
     }
 
     @Override
@@ -234,5 +318,29 @@ public class TradingPresenter implements ITradingPresenter {
     public void onOrderQuantityEntered(ExchangeMarket market, ExchangeAction.ExchangeActions action,
                                        String amount, String price) {
         this.onOrderPriceEntered(market, action, amount, price);
+    }
+
+    @Override
+    public int getOrdersCount() {
+        if (this.pastOrders == null) {
+            return 0;
+        }
+
+        return this.pastOrders.size();
+    }
+
+    @Override
+    public Order getOrderAtPosition(int position) {
+        if (this.pastOrders == null) {
+            return null;
+        }
+
+        return this.pastOrders.get(position);
+    }
+
+    @Override
+    public void onOrderClick(int position) {
+        Order order = this.getOrderAtPosition(position);
+        this.view.goToFullOrderItemActivity(order);
     }
 }
