@@ -40,7 +40,14 @@ public class OrderItemFullActivity extends CryptoQuackActivity implements IOrder
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_item_full);
         this.setTitle(getString(R.string.order_item_full_header));
-        
+
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        String exchangeTypeString = extras.getString(
+                OrderItemFullActivity.EXTRA_ORDER_ITEM_FULL_ACTIVITY_EXCHANGE_TYPE);
+        final Exchanges.Exchange exchangeType = Exchanges.Exchange.valueOf(exchangeTypeString);
+        String orderId = extras.getString(
+                OrderItemFullActivity.EXTRA_ORDER_ITEM_FULL_ACTIVITY_ORDER_ID);
 
         this.exchangeTextView = (TextView) this.findViewById(R.id.exchange_text_view);
         this.orderTimeTextView = (TextView) this.findViewById(R.id.order_date_text_view);
@@ -49,7 +56,7 @@ public class OrderItemFullActivity extends CryptoQuackActivity implements IOrder
         this.orderProgressTextView = (TextView) this.findViewById(R.id.order_progress_full_text_view);
 
         this.orderItemPresenter.onCreate(this);
-        this.orderItemPresenter.setOrder(null);
+        this.orderItemPresenter.setOrder(exchangeType, orderId);
     }
 
     @Override

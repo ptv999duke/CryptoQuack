@@ -15,6 +15,7 @@ import com.cryptoquack.cryptoquack.Presenter.OrderItemPresenter;
 import com.cryptoquack.cryptoquack.R;
 import com.cryptoquack.cryptoquack.View.Interfaces.IOrderItemView;
 import com.cryptoquack.model.Model;
+import com.cryptoquack.model.exchange.Exchanges;
 import com.cryptoquack.model.order.Order;
 
 import javax.inject.Inject;
@@ -81,5 +82,10 @@ public class OrderItemView extends ConstraintLayout implements IOrderItemView {
     public void setOrderSummaryTextview(String orderSummary, boolean visible) {
         this.orderSummaryTextview.setText(orderSummary);
         this.orderSummaryTextview.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void setExchange(Exchanges.Exchange exchange) {
+        // Not applicable to this view item.
     }
 }

@@ -3,6 +3,7 @@ package com.cryptoquack.cryptoquack.Presenter;
 import com.cryptoquack.cryptoquack.Presenter.Interfaces.IOrderItemPresenter;
 import com.cryptoquack.cryptoquack.ResourceManager.IResourceManager;
 import com.cryptoquack.cryptoquack.View.Interfaces.IOrderItemView;
+import com.cryptoquack.model.exchange.Exchanges;
 import com.cryptoquack.model.logger.ILogger;
 import com.cryptoquack.model.IModel;
 import com.cryptoquack.model.currency.Currencies;
@@ -73,5 +74,10 @@ public class OrderItemPresenter implements IOrderItemPresenter {
             String progressText = this.rm.getOrderFulfilledPercentageString(percentFulfilled);
             this.view.setOrderProgress(progressText, true);
         }
+    }
+
+    @Override
+    public void setOrder(Exchanges.Exchange exchange, String orderId) {
+
     }
 }

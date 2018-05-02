@@ -3,6 +3,7 @@ package com.cryptoquack.cryptoquack.Presenter.Interfaces;
 import com.cryptoquack.cryptoquack.ResourceManager.IResourceManager;
 import com.cryptoquack.cryptoquack.View.Interfaces.IOrderItemView;
 import com.cryptoquack.model.IModel;
+import com.cryptoquack.model.exchange.Exchanges;
 import com.cryptoquack.model.order.Order;
 
 /**
@@ -14,4 +15,6 @@ public interface IOrderItemPresenter {
     public void onCreate(IOrderItemView view);
 
     public void setOrder(Order order);
+
+    public void setOrder(Exchanges.Exchange exchange, String orderId);
 }
