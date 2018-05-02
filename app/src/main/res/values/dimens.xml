@@ -10,4 +10,5 @@
     <dimen name="market_selection_max_width">200sp</dimen>
     <dimen name="action_selection_max_width">200sp</dimen>
     <dimen name="trading_table_right_padding">8sp</dimen>
+    <dimen name="order_summary_max_width">200sp</dimen>
 </resources>

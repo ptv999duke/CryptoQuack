@@ -42,4 +42,10 @@
     <string name="invalid_price_error_string">Invalid price. Must be a valid positive number.</string>
     <string name="invalid_quantity_error_string">Invalid quantity. Must be a valid positive number.</string>
     <string name="order_item_header">Order</string>
+    <string name="exchange_indicator_label">Exchange:</string>
+    <string name="order_item_type_indicator_text">Order type:</string>
+    <string name="order_summary_indicator_text">Order summary:</string>
+    <string name="order_item_progress_indicator_label">Progress:</string>
+    <string name="order_item_date_indicator_label">Order date:</string>
+    <string name="order_item_full_header">Order Detail</string>
 </resources>

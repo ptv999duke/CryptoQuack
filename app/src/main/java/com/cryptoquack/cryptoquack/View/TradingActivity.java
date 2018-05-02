@@ -226,6 +226,15 @@ public class TradingActivity extends CryptoQuackActivity implements ITradingView
 
     @Override
     public void goToFullOrderItemActivity(Order order) {
-
+        Bundle tradingActivityBundle = new Bundle();
+        tradingActivityBundle.putString(
+                OrderItemFullActivity.EXTRA_ORDER_ITEM_FULL_ACTIVITY_EXCHANGE_TYPE,
+                order.getExchange().name());
+        tradingActivityBundle.putString(
+                OrderItemFullActivity.EXTRA_ORDER_ITEM_FULL_ACTIVITY_ORDER_ID,
+                order.getOrderId());
+        Intent intent = new Intent(TradingActivity.this, OrderItemFullActivity.class);
+        intent.putExtras(tradingActivityBundle);
+        startActivity(intent);
     }
 }
